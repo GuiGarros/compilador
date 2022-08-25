@@ -3,6 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Compilador.iml" filepath="$PROJECT_DIR$/Compilador.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/Compiler/Compiler.iml" filepath="$PROJECT_DIR$/src/Compiler/Compiler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/Graphic/Graphic.iml" filepath="$PROJECT_DIR$/src/Graphic/Graphic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/Compiler/Lexical.iml" filepath="$PROJECT_DIR$/src/Compiler/Lexical.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/Services/Services.iml" filepath="$PROJECT_DIR$/src/Services/Services.iml" />
     </modules>
   </component>
 </project>

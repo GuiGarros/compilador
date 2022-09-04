@@ -101,10 +101,49 @@ public class LexicalAnalyser {
     }
   }
 
-  private String treatToken(String texto){
+  private void treatToken(){
 
     try{
-      return "guilherme";
+
+      for (int i = 0; i < this.codeToAnalyse.size();i++) {
+        String text = this.codeToAnalyse.get(i);
+
+        for(int j = 0; j < text.length(); j++)
+        {
+
+          if(text.charAt(j)>47 && text.charAt(j) < 58)
+          {
+            treatDigit(text);
+          }
+          else if((text.charAt(j) > 64 && text.charAt(j) < 91) || (text.charAt(j) > 96 && text.charAt(j) < 123))
+          {
+            treatIdentifier(text);
+          }
+          else if(text.charAt(j) == ':')
+          {
+            treatAttributions(text);
+          }
+          else if(text.charAt(j) == '+' || text.charAt(j) == '-' || text.charAt(j) == '*')
+          {
+            treatOperations(text);
+          }
+          else if(text.charAt(j) == '!' || text.charAt(j) == '<' || text.charAt(j) == '>' || text.charAt(j) == '=')
+          {
+            ///não sei qual vai aqui
+          }
+          else if(text.charAt(j) == ';' || text.charAt(j) == ',' || text.charAt(j) == '(' || text.charAt(j) == ')' || text.charAt(j) == '.')
+          {
+            treatPontuation(text);
+          }
+          else
+          {
+            new Exception("error");
+          }
+
+        }
+
+      }
+
 
     }
     catch(Exception e)

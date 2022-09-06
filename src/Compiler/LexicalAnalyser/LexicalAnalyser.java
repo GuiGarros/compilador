@@ -9,10 +9,9 @@ import java.util.Arrays;
 public class LexicalAnalyser {
   ArrayList<String> reservedSymbols = new ArrayList<String>();
   ArrayList<String> reservedLexemes = new ArrayList<String>();
-  ArrayList<String[]> tokenList = new ArrayList<String[]>();
+  public ArrayList<String[]> tokenList = new ArrayList<String[]>();
 
   String codeToAnalyse = "";
-  ArrayList<String[]> tokenArray = new ArrayList<String[]>();
   public int indexStopped = 0;
 
 
@@ -30,6 +29,7 @@ public class LexicalAnalyser {
 
   public void AnalyseLexemes() {
     treatText();
+    treatToken();
   }
 
   private void treatText() {
@@ -38,8 +38,8 @@ public class LexicalAnalyser {
   }
 
   private void removeComment() {
-    try {
       boolean commentFlag = false;
+      String newCode = "";
       for (int i = 0, j = 0; i < this.codeToAnalyse.length(); i++) {
         char character = this.codeToAnalyse.charAt(i);
         if (character == '{' && !commentFlag) {
@@ -49,41 +49,37 @@ public class LexicalAnalyser {
 
         if (character == '}') {
           commentFlag = false;
-          codeToAnalyse = codeToAnalyse.substring(0, j) + codeToAnalyse.substring((j + 1));
+          codeToAnalyse = codeToAnalyse.substring(0, j) + codeToAnalyse.substring(i+1, codeToAnalyse.length());
+          i = j;
         }
       }
-    } catch (Exception e) {
-      throw e;
-    }
   }
 
   private void treatToken() {
-
     try {
-
-      for (int i = 0; i < this.codeToAnalyse.size(); i++) {
-        String text = this.codeToAnalyse.get(i);
-
-        for (int j = 0; j < text.length(); j++) {
-
-          if (text.charAt(j) > 47 && text.charAt(j) < 58) {
-            treatDigit(text);
-          } else if ((text.charAt(j) > 64 && text.charAt(j) < 91) || (text.charAt(j) > 96 && text.charAt(j) < 123)) {
-            treatIdentifier(text);
-          } else if (text.charAt(j) == ':') {
-            treatAttributions(text);
-          } else if (text.charAt(j) == '+' || text.charAt(j) == '-' || text.charAt(j) == '*') {
-            treatOperations(text);
-          } else if (text.charAt(j) == '!' || text.charAt(j) == '<' || text.charAt(j) == '>' || text.charAt(j) == '=') {
-            ///não sei qual vai aqui
-          } else if (text.charAt(j) == ';' || text.charAt(j) == ',' || text.charAt(j) == '(' || text.charAt(j) == ')' || text.charAt(j) == '.') {
-            treatPontuation(text);
-          } else {
-            new Exception("error");
-          }
-
+      for (int i = 0; i < codeToAnalyse.length()-1; i++) {
+        i = indexStopped;
+        if(i >= codeToAnalyse.length()){
+          break;
         }
-
+        char character = codeToAnalyse.charAt(i);
+        if(character == ' '){
+          indexStopped ++;
+        } else if (Character.isDigit(character)) {
+          treatDigit(i);
+        } else if (Character.isAlphabetic(character)) {
+          treatIdentifier(i);
+        } else if (character == ':') {
+          treatAttributions(i);
+        } else if (character == '+' || character == '-' || character == '*') {
+          treatOperations(i);
+        } else if (character == '!' || character == '<' || character == '>' || character == '=') {
+          treatCondicionalOperations(i);
+        } else if (character == ';' || character == ',' || character == '(' || character == ')' || character == '.') {
+          treatPontuation(i);
+        } else {
+          new Exception("error");
+        }
       }
 
 
@@ -94,14 +90,16 @@ public class LexicalAnalyser {
 
   public void treatDigit(int index) {
     String word = "";
-    for (int i = index; i < codeToAnalyse.length(); i++) {
-      char character = codeToAnalyse.charAt(index);
+    int i =0;
+    for (i = index; i < codeToAnalyse.length(); i++) {
+      char character = codeToAnalyse.charAt(i);
       if (!Character.isDigit(character)) {
         break;
       }
       word += Character.toString(character);
     }
 
+    indexStopped = i;
     String[] values = {word, searchReserved(word)};
     tokenList.add(values);
   }
@@ -110,7 +108,7 @@ public class LexicalAnalyser {
     String word = "";
     int i = 0;
     for (i = index; i < codeToAnalyse.length(); i++) {
-      char character = codeToAnalyse.charAt(index);
+      char character = codeToAnalyse.charAt(i);
       if (!Character.isDigit(character) && !Character.isAlphabetic(character) && character != '_') {
         break;
       }
@@ -167,7 +165,6 @@ public class LexicalAnalyser {
     indexStopped = index + 1;
     String[] values = {Character.toString(character), searchReserved(Character.toString(character))};
     tokenList.add(values);
-    //    return values;
   }
 
   public String searchReserved(String word) {
@@ -175,8 +172,6 @@ public class LexicalAnalyser {
     if (index >= 0) {
       return reservedSymbols.get(index);
     }
-    return "sidentificador";
+      return "sidentificador";
   }
-
-
 }

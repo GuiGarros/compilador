@@ -8,8 +8,6 @@ import java.util.ArrayList;
 public class FileReader {
   private String filePath;
   String code = "";
-  ArrayList<String> file = new ArrayList<String>();
-
   public String readProgram() {
     try {
       File myObj = new File(filePath);
@@ -28,6 +26,7 @@ public class FileReader {
   }
 
   public ArrayList<String> readFile() {
+    ArrayList<String> file = new ArrayList<String>();
     try {
       File myObj = new File(filePath);
       Scanner myReader = new Scanner(myObj);

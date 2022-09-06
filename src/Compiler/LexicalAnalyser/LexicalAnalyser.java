@@ -109,6 +109,18 @@ public class LexicalAnalyser {
     return null;
   }
 
+  public String[] treatCondicionalOperations (String wordToTreat) {
+    String word = "";
+    char character = wordToTreat.charAt(0);
+    if(character == '>' || character == '<' || character == '='){
+      String[] values = {Character.toString(character), searchReserved(Character.toString(character))};
+
+      return values;
+    }
+
+    return null;
+  }
+
   public String[] treatOperations (String wordToTreat) {
     String word = "";
     char character = wordToTreat.charAt(0);

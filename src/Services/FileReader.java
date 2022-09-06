@@ -7,15 +7,15 @@ import java.util.Scanner; // Import the Scanner class to read text files
 import java.util.ArrayList;
 public class FileReader {
   private String filePath;
-  ArrayList<String> code = new ArrayList<String>();
+  String code = "";
 
-  public ArrayList<String> readFile() {
+  public String readFile() {
     try {
       File myObj = new File(filePath);
       Scanner myReader = new Scanner(myObj);
       while (myReader.hasNextLine()) {
         String data = myReader.nextLine();
-        code.add(data);
+        code += " " + data;
       }
       myReader.close();
     } catch (FileNotFoundException e) {

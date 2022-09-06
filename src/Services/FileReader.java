@@ -8,8 +8,9 @@ import java.util.ArrayList;
 public class FileReader {
   private String filePath;
   String code = "";
+  ArrayList<String> file = new ArrayList<String>();
 
-  public String readFile() {
+  public String readProgram() {
     try {
       File myObj = new File(filePath);
       Scanner myReader = new Scanner(myObj);
@@ -24,6 +25,23 @@ public class FileReader {
     }
 
     return code;
+  }
+
+  public ArrayList<String> readFile() {
+    try {
+      File myObj = new File(filePath);
+      Scanner myReader = new Scanner(myObj);
+      while (myReader.hasNextLine()) {
+        String data = myReader.nextLine();
+        file.add(data);
+      }
+      myReader.close();
+    } catch (FileNotFoundException e) {
+      System.out.println("Arquivo não foi encontrado.");
+      e.printStackTrace();
+    }
+
+    return file;
   }
 
   public void setFilePath(String path) {

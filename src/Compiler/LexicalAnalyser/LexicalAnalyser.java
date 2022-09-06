@@ -34,7 +34,13 @@ public class LexicalAnalyser {
   private void treatText() {
     for (int i = 0; i < this.codeToAnalyse.size();i++){
       String line = this.codeToAnalyse.get(i);
-      line = line.replace(" ", "");
+
+      ////
+      ////
+      //// remove os espaços da linha
+      //// line = line.replace(" ", "");
+      ////
+      ////
 
       if(line.isEmpty())
       {
@@ -111,11 +117,11 @@ public class LexicalAnalyser {
         for(int j = 0; j < text.length(); j++)
         {
 
-          if(text.charAt(j)>47 && text.charAt(j) < 58)
+          if(Character.isDigit(text.charAt(j)))
           {
             treatDigit(text);
           }
-          else if((text.charAt(j) > 64 && text.charAt(j) < 91) || (text.charAt(j) > 96 && text.charAt(j) < 123))
+          else if(Character.isAlphabetic(text.charAt(j)))
           {
             treatIdentifier(text);
           }

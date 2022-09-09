@@ -23,7 +23,7 @@ inicio  {corpo da funcao soma}
 loop;
 soma:= c+a;
 fim;
-inicio      {corpo principal}
+inicio      {corpo principal
 s:= soma;
 escreva(s)
 fim.

@@ -53,6 +53,10 @@ public class LexicalAnalyser {
           i = j;
         }
       }
+
+      if(commentFlag){
+        throw new Error("erro: comentário não foi encerrado");
+      }
   }
 
   private void treatToken() {
@@ -78,13 +82,11 @@ public class LexicalAnalyser {
         } else if (character == ';' || character == ',' || character == '(' || character == ')' || character == '.') {
           treatPontuation(i);
         } else {
-          new Exception("error");
+          throw new Error("error: caracter inválido: " + character);
         }
       }
-
-
-    } catch (Exception e) {
-      throw e;
+    } catch (Error error) {
+      throw error;
     }
   }
 

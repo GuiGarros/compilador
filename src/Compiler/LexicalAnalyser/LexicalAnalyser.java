@@ -82,7 +82,10 @@ public class LexicalAnalyser {
         } else if (character == ';' || character == ',' || character == '(' || character == ')' || character == '.') {
           treatPontuation(i);
         } else {
-          throw new Error("error: caracter inválido: " + character);
+//          throw new Error("error: caracter inválido: " + character);
+          String[] values = {Character.toString(character), "serror"};
+          tokenList.add(values);
+          indexStopped++;
         }
       }
     } catch (Error error) {

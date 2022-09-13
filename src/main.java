@@ -7,7 +7,7 @@ import java.util.Arrays;
 public class main {
     public static void main(String[] args) {
         FileReader reader = new FileReader();
-        reader.setFilePath("src/Services/inicio.txt");
+        reader.setFilePath("src/Tests/teste_1.txt");
         String program = reader.readProgram();
 
         LexicalAnalyser analyser = new LexicalAnalyser();

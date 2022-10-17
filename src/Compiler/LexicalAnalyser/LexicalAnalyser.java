@@ -1,17 +1,11 @@
 package Compiler.LexicalAnalyser;
-
 import Services.FileReader;
-
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class LexicalAnalyser {
   ArrayList<String> reservedSymbols = new ArrayList<String>();
   ArrayList<String> reservedLexemes = new ArrayList<String>();
-  public ArrayList<String[]> tokenList = new ArrayList<String[]>();
-
-  String codeToAnalyse = "";
+  public String codeToAnalyse = "";
   public int indexStopped = 0;
 
 
@@ -29,7 +23,6 @@ public class LexicalAnalyser {
 
   public void AnalyseLexemes() {
     treatText();
-    treatToken();
   }
 
   private void treatText() {
@@ -59,41 +52,39 @@ public class LexicalAnalyser {
       }
   }
 
-  private void treatToken() {
+  public String[] getNextToken() {
+    char character = codeToAnalyse.charAt(indexStopped);
     try {
-      for (int i = 0; i < codeToAnalyse.length()-1; i++) {
-        i = indexStopped;
-        if(i >= codeToAnalyse.length()){
-          break;
-        }
-        char character = codeToAnalyse.charAt(i);
         if(character == ' '){
           indexStopped ++;
-        } else if (Character.isDigit(character)) {
-          treatDigit(i);
+          character = codeToAnalyse.charAt(indexStopped);
+        }
+        if (Character.isDigit(character)) {
+          return treatDigit(indexStopped);
         } else if (Character.isAlphabetic(character)) {
-          treatIdentifier(i);
+          return treatIdentifier(indexStopped);
         } else if (character == ':') {
-          treatAttributions(i);
+          return treatAttributions(indexStopped);
         } else if (character == '+' || character == '-' || character == '*') {
-          treatOperations(i);
+          return treatOperations(indexStopped);
         } else if (character == '!' || character == '<' || character == '>' || character == '=') {
-          treatCondicionalOperations(i);
+          return treatCondicionalOperations(indexStopped);
         } else if (character == ';' || character == ',' || character == '(' || character == ')' || character == '.') {
-          treatPontuation(i);
+          return treatPontuation(indexStopped);
         } else {
 //          throw new Error("error: caracter inválido: " + character);
           String[] values = {Character.toString(character), "serror"};
-          tokenList.add(values);
           indexStopped++;
+          return values;
         }
-      }
     } catch (Error error) {
-      throw error;
+      String[] values = {Character.toString(character), "serror"};
+      indexStopped++;
+      return values;
     }
   }
 
-  public void treatDigit(int index) {
+  public String[] treatDigit(int index) {
     String word = "";
     int i =0;
     for (i = index; i < codeToAnalyse.length(); i++) {
@@ -106,10 +97,11 @@ public class LexicalAnalyser {
 
     indexStopped = i;
     String[] values = {word, searchReserved(word)};
-    tokenList.add(values);
+
+    return values;
   }
 
-  public void treatIdentifier(int index) {
+  public String[] treatIdentifier(int index) {
     String word = "";
     int i = 0;
     for (i = index; i < codeToAnalyse.length(); i++) {
@@ -119,12 +111,12 @@ public class LexicalAnalyser {
       }
       word += Character.toString(character);
     }
-    indexStopped = i;
+    indexStopped = i + 1;
     String[] values = {word, searchReserved(word)};
-    tokenList.add(values);
+    return values;
   }
 
-  public void treatAttributions(int index) {
+  public String[] treatAttributions(int index) {
     char character = codeToAnalyse.charAt(index);
     String word = "";
     word = Character.toString(character);
@@ -137,10 +129,10 @@ public class LexicalAnalyser {
     }
 
     String[] values = {word, searchReserved(word)};
-    tokenList.add(values);
+    return values;
   }
 
-  public void treatCondicionalOperations(int index) {
+  public String[] treatCondicionalOperations(int index) {
     char character = codeToAnalyse.charAt(index);
     String word = "";
     word = Character.toString(character);
@@ -155,21 +147,21 @@ public class LexicalAnalyser {
     }
 
     String[] values = {word, searchReserved(word)};
-    tokenList.add(values);
+    return values;
   }
 
-  public void treatOperations(int index) {
+  public String[] treatOperations(int index) {
     char character = codeToAnalyse.charAt(index);
     indexStopped = index + 1;
     String[] values = {Character.toString(character), searchReserved(Character.toString(character))};
-    tokenList.add(values);
+    return values;
   }
 
-  public void treatPontuation(int index) {
+  public String[] treatPontuation(int index) {
     char character = codeToAnalyse.charAt(index);
     indexStopped = index + 1;
     String[] values = {Character.toString(character), searchReserved(Character.toString(character))};
-    tokenList.add(values);
+    return values;
   }
 
   public String searchReserved(String word) {

@@ -190,8 +190,188 @@ public class SyntaxAnalyser {
         } else {
           throw new Error("BLOCO SPONTOVIRGULA");
         }
+      } else {
+        throw new Error("BLOCO SPONTOVIRGULA");
+      }
+    } else {
+      throw new Error("BLOCO SPONTOVIRGULA");
+    }
+  }
+
+  public void analyserWhile()
+  {
+    String[] token = analyser.getNextToken();
+    //analisaExpressão fazer
+
+    if(token[1] == "sfaca")
+    {
+      token = analyser.getNextToken();
+      AnalyseSimpleCommand(token);
+
+    } else {
+      throw new Error("Error sfaca");
+    }
+
+  }
+
+  public void analyserIf()
+  {
+    String[] token = analyser.getNextToken();
+    //analisaExpressão fazer
+
+    if(token[1] == "sentao")
+    {
+      token = analyser.getNextToken();
+      AnalyseSimpleCommand(token);
+
+      if(token[1] == "ssenao") {
+        token = analyser.getNextToken();
+        AnalyseSimpleCommand(token);
+      }
+    } else {
+      throw new Error("Error sentao");
+    }
+  }
+
+  public void analyserSubRoutines(String[] originalToken)
+  {
+    while(originalToken[1] == "sprocedimento" || originalToken[1] == "sfuncao")
+    {
+      if(originalToken[1] == "sprocedimento")
+      {
+        //analisa declaração procedimento
+      } else {
+        //analisa declaração funcção
+      }
+      if(originalToken[1] == "sponto_vírgula")
+      {
+        String[] token = analyser.getNextToken();
+      } else {
+        throw new Error ("Error sponto_virgula");
       }
     }
   }
 
+  public void analyser_procedure_declaration()
+  {
+    String [] token = analyser.getNextToken()
+    if(token[1] == "sidentificador")
+    {
+      token = analyser.getNextToken();
+      if(token[1] == "sponto_vírgula") {
+        //chamar analisa bloco
+      } else {
+        throw new Error("Error sponto_vírgula");
+      }
+    } else {
+      throw new Error("Error sidentificador");
+    }
+  }
+
+  public void analyser_function_declaration()
+  {
+    String[] token = analyser.getNextToken();
+
+    if(token[1] == "sidentificador")
+    {
+      token = analyser.getNextToken();
+
+      if(token[1] == "sdoispontos")
+      {
+        token = analyser.getNextToken();
+
+        if(token[1] == "sinteiro" || token[1] == "sbooleano")
+        {
+          token = analyser.getNextToken();
+          if(token[1] == "sponto_vírgula")
+          {
+            // chama analisa bloco
+          }
+        } else {
+          throw new Error("Error sinteiro || booleano");
+        }
+      } else {
+        throw new Error("Error sdoipontos");
+      }
+    } else
+    {
+      throw new Error("Error sidentificador");
+    }
+  }
+
+  public void analyser_expression(String[] originalToken)
+  {
+    // chamar analisa expressão simples
+
+    if(originalToken[1] == "smaior" || originalToken[1] == "smaiorig" || originalToken[1] == "smenor" || originalToken[1] == "smenorig")
+    {
+      String[] token = analyser.getNextToken();
+      //chama analisa expressão simples
+    }
+  }
+
+  public void analyser_expression_simple(String[] originalToken)
+  {
+    if(originalToken[1] == "smais" || originalToken[1] == "smenos")
+    {
+      String[] token = analyser.getNextToken();
+      //chamar analisa termo
+
+      while(token[1] == "smais" || token[1] == "smenos" || token[1] == "sou")
+      {
+        token = analyser.getNextToken();
+        //chama analisa termo
+      }
+    }
+
+  }
+
+  public void analyser_term(String[] originalToken)
+  {
+    // chama analisa fator
+
+    while(originalToken[1] == "smulti" || originalToken[1] == "sdiv" || originalToken[1] == "sse")
+    {
+
+      String[] token = analyser.getNextToken();
+      // chama analisa fator
+
+    }
+  }
+
+  public void analyser_factor(String[] originalToken)
+  {
+    if(originalToken[1] == "sidentificador")
+    {
+      // chama analisa função
+    } else if(originalToken[1] == "snumero"){
+        String[] token = analyser.getNextToken();
+    } else if(originalToken[1] == "snao"){
+      String[] token = analyser.getNextToken();
+      analyser_factor(token);
+    } else if(originalToken[1] == "sabre_parenteses"){
+      String[] token = analyser.getNextToken();
+      //chama analisa expressão
+      if(token[1] == "sfecha_parenteses"){
+        token = analyser.getNextToken();
+      } else {
+        throw new Error ("Error ausencia de fecha parenteses )");
+      }
+    } else if(originalToken[0] == "verdadeiro" || originalToken[0] == "falso"){
+      String[] token = analyser.getNextToken();
+    } else {
+
+      throw new Error("Error");
+    }
+  }
+
+  public void analyser_call_procedure()
+  {
+
+  }
+
+  public void analyser_call_function()
+  {
+
+  }
 }

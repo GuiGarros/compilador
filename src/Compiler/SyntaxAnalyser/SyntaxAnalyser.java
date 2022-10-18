@@ -21,7 +21,7 @@ public class SyntaxAnalyser {
           token = analyser.getNextToken();
 
           if(token[1] == "spontovirgula"){
-            //Chamar Analisa Bloco
+            AnalyseBlock();
             token = analyser.getNextToken();
 
             if(token[1] == "sponto"){
@@ -46,9 +46,9 @@ public class SyntaxAnalyser {
   public void AnalyseBlock(){
     String[] token = analyser.getNextToken();
 
-//    Analisa_et_variáveis
-//    Analisa_subrotinas
-//    Analisa_comandos
+    AnalyseVariables(token);
+    analyserSubRoutines(token);
+    AnalyseCommand(token);
   }
 
   public void AnalyseDeclarations(String[] originalToken){
@@ -77,10 +77,6 @@ public class SyntaxAnalyser {
     String[] token = originalToken;
     while (true) {
       if (token[1] == "sidentificador") {
-//        Pesquisa_duplicvar_ tabela(token.lexema)
-//        se não encontrou duplicidade
-//        então início
-//        insere_tabela(token.lexema, “variável” ,””,””)
         token = analyser.getNextToken();
         if (token[1] == "svirgula" || token[1] == "sdoispontos") {
           if (token[1] == "svirgula") {
@@ -98,31 +94,26 @@ public class SyntaxAnalyser {
       }
     }
     token = analyser.getNextToken();
-    //Analisa Tipo
+    AnalyseType(token);
   }
 
   public void AnalyseType(String[] originalToken){
     if(originalToken[1] != "sinteiro" && originalToken[1] != "sbooleano"){
       throw new Error("BLOCO SPONTOVIRGULA");
     } else {
-      //coloca na tabela
       String[] token = analyser.getNextToken();
     }
-//    se (token.símbolo  sinteiro e token.símbolo   sbooleano))
-//    então ERRO
-//    senão coloca_tipo_tabela(token.lexema)
-//            Léxico(token)
   }
 
   public void AnalyseCommand(String[] originalToken) {
     if (originalToken[1] != "sinicio") {
       String[] token = analyser.getNextToken();
-      //Analisa Comandos Simples
+      AnalyseSimpleCommand(token);
       while(token[1] != "sfim"){
         if(token[1] == "spontovirgula"){
           token = analyser.getNextToken();
           if(token[1] != "sfim"){
-            //Analisa Comandos Simples
+            AnalyseSimpleCommand(token);
           } else {
             break;
           }
@@ -137,22 +128,22 @@ public class SyntaxAnalyser {
   public void AnalyseSimpleCommand(String[] originalToken){
     switch (originalToken[1]){
       case "sidentificador":
-        //Analisa_atrib_chprocedimento
+        AnalyseProcedureAtrib(originalToken);
         break;
       case "sse":
-        //Analisa_se
+        analyserIf();
         break;
       case "senquanto":
-        //Analisa_enquanto
+        analyserWhile();
         break;
       case "sleia":
-        //Analisa_leia
+        AnalyserRead();
         break;
       case "sescreva":
-        //Analisa_escreva
+        AnalyseWrite();
         break;
       default:
-        //Analisa_comandos
+        AnalyseCommand(originalToken);
     }
   }
 
@@ -164,7 +155,7 @@ public class SyntaxAnalyser {
     }
   }
 
-  public void AnalyseRead(){
+  public void AnalyserRead(){
     String[] token = analyser.getNextToken();
     if(token[1] == "sabreparenteses"){
       token = analyser.getNextToken();
@@ -201,7 +192,7 @@ public class SyntaxAnalyser {
   public void analyserWhile()
   {
     String[] token = analyser.getNextToken();
-    //analisaExpressão fazer
+    analyser_expression(token);
 
     if(token[1] == "sfaca")
     {
@@ -217,7 +208,7 @@ public class SyntaxAnalyser {
   public void analyserIf()
   {
     String[] token = analyser.getNextToken();
-    //analisaExpressão fazer
+    analyser_expression(token);
 
     if(token[1] == "sentao")
     {
@@ -239,9 +230,9 @@ public class SyntaxAnalyser {
     {
       if(originalToken[1] == "sprocedimento")
       {
-        //analisa declaração procedimento
+        analyser_procedure_declaration();
       } else {
-        //analisa declaração funcção
+        analyser_function_declaration();
       }
       if(originalToken[1] == "sponto_vírgula")
       {
@@ -254,12 +245,12 @@ public class SyntaxAnalyser {
 
   public void analyser_procedure_declaration()
   {
-    String [] token = analyser.getNextToken()
+    String [] token = analyser.getNextToken();
     if(token[1] == "sidentificador")
     {
       token = analyser.getNextToken();
       if(token[1] == "sponto_vírgula") {
-        //chamar analisa bloco
+        AnalyseBlock();
       } else {
         throw new Error("Error sponto_vírgula");
       }
@@ -285,7 +276,7 @@ public class SyntaxAnalyser {
           token = analyser.getNextToken();
           if(token[1] == "sponto_vírgula")
           {
-            // chama analisa bloco
+            AnalyseBlock();
           }
         } else {
           throw new Error("Error sinteiro || booleano");
@@ -301,12 +292,12 @@ public class SyntaxAnalyser {
 
   public void analyser_expression(String[] originalToken)
   {
-    // chamar analisa expressão simples
+    analyser_expression_simple(originalToken);
 
     if(originalToken[1] == "smaior" || originalToken[1] == "smaiorig" || originalToken[1] == "smenor" || originalToken[1] == "smenorig")
     {
       String[] token = analyser.getNextToken();
-      //chama analisa expressão simples
+      analyser_expression_simple(token);
     }
   }
 
@@ -315,12 +306,12 @@ public class SyntaxAnalyser {
     if(originalToken[1] == "smais" || originalToken[1] == "smenos")
     {
       String[] token = analyser.getNextToken();
-      //chamar analisa termo
+      analyser_term(token);
 
       while(token[1] == "smais" || token[1] == "smenos" || token[1] == "sou")
       {
         token = analyser.getNextToken();
-        //chama analisa termo
+        analyser_term(token);
       }
     }
 
@@ -328,13 +319,13 @@ public class SyntaxAnalyser {
 
   public void analyser_term(String[] originalToken)
   {
-    // chama analisa fator
+    analyser_factor(originalToken);
 
     while(originalToken[1] == "smulti" || originalToken[1] == "sdiv" || originalToken[1] == "sse")
     {
 
       String[] token = analyser.getNextToken();
-      // chama analisa fator
+      analyser_factor(token);
 
     }
   }
@@ -351,7 +342,7 @@ public class SyntaxAnalyser {
       analyser_factor(token);
     } else if(originalToken[1] == "sabre_parenteses"){
       String[] token = analyser.getNextToken();
-      //chama analisa expressão
+      analyser_expression(token);
       if(token[1] == "sfecha_parenteses"){
         token = analyser.getNextToken();
       } else {

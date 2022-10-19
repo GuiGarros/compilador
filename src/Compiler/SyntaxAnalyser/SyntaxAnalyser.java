@@ -128,7 +128,7 @@ public class SyntaxAnalyser {
   public void AnalyseSimpleCommand(String[] originalToken){
     switch (originalToken[1]){
       case "sidentificador":
-        AnalyseProcedureAtrib(originalToken);
+        AnalyserProcedureAtrib(originalToken);
         break;
       case "sse":
         analyserIf();
@@ -147,12 +147,17 @@ public class SyntaxAnalyser {
     }
   }
 
-  public void AnalyseProcedureAtrib(String[] originalToken){
+  public void AnalyserProcedureAtrib(String[] originalToken){
     if(originalToken[1] == "satribuição"){
-      //Analisa_atribuicao
+      analyser_atrib(originalToken);
     } else {
-      //Chamada_procedimento
+      analyser_call_procedure();
     }
+  }
+
+  public void analyser_atrib(String[] originalToken)
+  {
+    analyser_expression(originalToken);
   }
 
   public void AnalyserRead(){
@@ -334,7 +339,7 @@ public class SyntaxAnalyser {
   {
     if(originalToken[1] == "sidentificador")
     {
-      // chama analisa função
+      // chama analisa função vai fazer no semantico
     } else if(originalToken[1] == "snumero"){
         String[] token = analyser.getNextToken();
     } else if(originalToken[1] == "snao"){

@@ -53,9 +53,10 @@ public class LexicalAnalyser {
   }
 
   public String[] getNextToken() {
+    System.out.println(indexStopped);
     char character = codeToAnalyse.charAt(indexStopped);
     try {
-        if(character == ' '){
+        while(character == ' '){
           indexStopped ++;
           character = codeToAnalyse.charAt(indexStopped);
         }
@@ -111,7 +112,7 @@ public class LexicalAnalyser {
       }
       word += Character.toString(character);
     }
-    indexStopped = i + 1;
+    indexStopped = i;
     String[] values = {word, searchReserved(word)};
     return values;
   }

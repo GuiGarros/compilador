@@ -107,12 +107,12 @@ public class SyntaxAnalyser {
     public void AnalyseCommand(String[] originalToken) {
         if (originalToken[1] != "sinicio") {
             String[] token = analyser.getNextToken();
-            AnalyseSimpleCommand(token);
-            while (token[1] != "sfim") {
-                if (token[1].equals("spontovirgula")) {
+            token = AnalyseSimpleCommand(token);
+            while (!token[1].equals("sfim")) {
+                if (token[1].equals("sponto_vírgula")) {
                     token = analyser.getNextToken();
-                    if (token[1] != "sfim") {
-                        AnalyseSimpleCommand(token);
+                    if (!token[1].equals("sfim")) {
+                        token = AnalyseSimpleCommand(token);
                     } else {
                         break;
                     }
@@ -124,14 +124,16 @@ public class SyntaxAnalyser {
         }
     }
 
-    public void AnalyseSimpleCommand(String[] originalToken) {
+    public String[] AnalyseSimpleCommand(String[] originalToken) {
+
+
         switch (originalToken[1]) {
             case "sidentificador":
-                AnalyserProcedureAtrib(originalToken);
-                break;
+                String[] token = AnalyserProcedureAtrib(originalToken);
+                return token;
             case "sse":
-                analyserIf();
-                break;
+                token = analyserIf();
+                return token;
             case "senquanto":
                 analyserWhile();
                 break;
@@ -144,23 +146,29 @@ public class SyntaxAnalyser {
             default:
                 AnalyseCommand(originalToken);
         }
+
+        return originalToken;
     }
 
-    public void AnalyserProcedureAtrib(String[] originalToken) {
-        if (originalToken[1].equals("satribuição")) {
-            analyser_atrib(originalToken);
+    public String[] AnalyserProcedureAtrib(String[] originalToken) {
+        String[] token = analyser.getNextToken();
+        if (token[1].equals("satribuição")) {
+            token = analyser_atrib(token);
         } else {
             analyser_call_procedure();
         }
+        return token;
     }
 
-    public void analyser_atrib(String[] originalToken) {
-        analyser_expression(originalToken);
+    public String[] analyser_atrib(String[] originalToken) {
+        String[] token = analyser.getNextToken();
+        token = analyser_expression(token);
+        return token;
     }
 
     public void AnalyserRead() {
         String[] token = analyser.getNextToken();
-        if (token[1].equals("sabreparenteses")) {
+        if (token[1].equals("sabre_parênteses")) {
             token = analyser.getNextToken();
             if (token[1].equals("sidentificador")) {
                 token = analyser.getNextToken();
@@ -179,7 +187,7 @@ public class SyntaxAnalyser {
             token = analyser.getNextToken();
             if (token[1].equals("sidentificador")) {
                 token = analyser.getNextToken();
-                if (token[1].equals("sfecha_parenteses")) {
+                if (token[1].equals("sfecha_parênteses")) {
                     token = analyser.getNextToken();
                 } else {
                     throw new Error("BLOCO SPONTOVIRGULA");
@@ -198,7 +206,7 @@ public class SyntaxAnalyser {
 
         if (token[1].equals("sfaca")) {
             token = analyser.getNextToken();
-            AnalyseSimpleCommand(token);
+            token = AnalyseSimpleCommand(token);
 
         } else {
             throw new Error("Error sfaca");
@@ -206,21 +214,22 @@ public class SyntaxAnalyser {
 
     }
 
-    public void analyserIf() {
+    public String[] analyserIf() {
         String[] token = analyser.getNextToken();
-        analyser_expression(token);
+        token = analyser_expression(token);
 
         if (token[1].equals("sentao")) {
             token = analyser.getNextToken();
-            AnalyseSimpleCommand(token);
+            token = AnalyseSimpleCommand(token);
 
             if (token[1] == "ssenao") {
                 token = analyser.getNextToken();
-                AnalyseSimpleCommand(token);
+               token =  AnalyseSimpleCommand(token);
             }
         } else {
             throw new Error("Error sentao");
         }
+        return token;
     }
 
     public void analyserSubRoutines(String[] originalToken) {
@@ -277,61 +286,78 @@ public class SyntaxAnalyser {
         }
     }
 
-    public void analyser_expression(String[] originalToken) {
-        analyser_expression_simple(originalToken);
+    public String[] analyser_expression(String[] originalToken) {
+        String[] token = originalToken;
+        token = analyser_expression_simple(token);
 
-        if (originalToken[1].equals("smaior") || originalToken[1].equals("smaiorig") || originalToken[1].equals("smenor") || originalToken[1].equals("smenorig")) {
-            String[] token = analyser.getNextToken();
-            analyser_expression_simple(token);
-        }
-    }
-
-    public void analyser_expression_simple(String[] originalToken) {
-        if (originalToken[1].equals("smais") || originalToken[1].equals("smenos")) {
-            String[] token = analyser.getNextToken();
-            analyser_term(token);
-
-            while (token[1].equals("smais") || token[1].equals("smenos") || token[1].equals("sou")) {
-                token = analyser.getNextToken();
-                analyser_term(token);
-            }
+        if (
+                token[1].equals("smaior") ||
+                        token[1].equals("smaiorig") ||
+                        token[1].equals("smenor") ||
+                        token[1].equals("smenorig") ||
+                        token[1].equals("sdif") ||
+                        token[1].equals("sig")) {
+            token = analyser.getNextToken();
+            token = analyser_expression_simple(token);
         }
 
+        return token;
     }
 
-    public void analyser_term(String[] originalToken) {
-        analyser_factor(originalToken);
+    public String[] analyser_expression_simple(String[] originalToken) {
+        String[] token = originalToken;
+        if (token[1].equals("smais") || token[1].equals("smenos")) {
+            token = analyser.getNextToken();
+        }
+        token = analyser_term(token);
+        while (token[1].equals("smais") || token[1].equals("smenos") || token[1].equals("sou")) {
+            token = analyser.getNextToken();
+            token = analyser_term(token);
+        }
 
-        while (originalToken[1].equals("smulti") || originalToken[1].equals("sdiv") || originalToken[1].equals("sse")) {
+        return token;
+    }
 
-            String[] token = analyser.getNextToken();
+    public String[] analyser_term(String[] originalToken) {
+        String[] token = originalToken;
+        token = analyser_factor(token);
+
+        while (token[1].equals("smulti") || token[1].equals("sdiv") || token[1].equals("se")) {
+            token = analyser.getNextToken();
+            token = analyser_factor(token);
+        }
+
+        return token;
+    }
+
+    public String[] analyser_factor(String[] originalToken) {
+
+        String [] token = originalToken;
+        System.out.println(token[1]);
+        if (token[1].equals("sidentificador")) {
+            analyser_call_function();
+            return analyser.getNextToken();
+        } else if (token[1].equals("snumero")) {
+            return analyser.getNextToken();
+        } else if (token[1].equals("snao")) {
+            token = analyser.getNextToken();
             analyser_factor(token);
-
-        }
-    }
-
-    public void analyser_factor(String[] originalToken) {
-        if (originalToken[1].equals("sidentificador")) {
-            // chama analisa função vai fazer no semantico
-        } else if (originalToken[1].equals("snumero")) {
-            String[] token = analyser.getNextToken();
-        } else if (originalToken[1].equals("snao")) {
-            String[] token = analyser.getNextToken();
-            analyser_factor(token);
-        } else if (originalToken[1].equals("sabre_parenteses")) {
-            String[] token = analyser.getNextToken();
-            analyser_expression(token);
-            if (token[1].equals("sfecha_parenteses")) {
-                token = analyser.getNextToken();
+        } else if (token[1].equals("sabre_parênteses")) {
+            token = analyser.getNextToken();
+            token = analyser_expression(token);
+            if (token[1].equals("sfecha_parênteses")) {
+                return analyser.getNextToken();
             } else {
                 throw new Error("Error ausencia de fecha parenteses )");
             }
-        } else if (originalToken[0].equals("verdadeiro") || originalToken[0].equals("falso")) {
-            String[] token = analyser.getNextToken();
+        } else if (token[0].equals("verdadeiro") || token[0].equals("falso")) {
+            return analyser.getNextToken();
         } else {
 
             throw new Error("Error");
         }
+
+        return token;
     }
 
     public void analyser_call_procedure() {

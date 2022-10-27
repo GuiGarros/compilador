@@ -29,7 +29,7 @@ public class SyntaxAnalyser {
                             System.out.println("Fim do arquivo");
                             break;
                         } else {
-                            throw new Error("SPONTO");
+                            throw new Error("Error: Falta '.' no final ");
                         }
                     } else {
                         throw new Error("SPONTOVIRGULA");

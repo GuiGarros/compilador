@@ -21,8 +21,7 @@ public class SyntaxAnalyser {
           token = analyser.getNextToken();
 
           if (token[1].equals("sponto_vírgula")) {
-            AnalyseBlock();
-            token = analyser.getNextToken();
+            token = AnalyseBlock();
             if (token[1].equals("sponto")) {
               //validar se acabou arquivo, se não erro
               System.out.println("Fim do arquivo");
@@ -31,23 +30,25 @@ public class SyntaxAnalyser {
               throw new Error("Error: Ausência de um '.' no final do programa.");
             }
           } else {
-            throw new Error("SPONTOVIRGULA");
+            throw new Error("Error: Ausência de um ';'.");
           }
         } else {
-          throw new Error("SIDENTIFICADOR");
+          throw new Error("Error: Ausência de um 'identificador' para o programa.");
         }
       } else {
-        throw new Error("SPROGRAMA");
+        throw new Error("Error: Ausência de 'programa' na inicialização.");
       }
     }
   }
 
-  public void AnalyseBlock() {
+  public String[] AnalyseBlock() {
     String[] token = analyser.getNextToken();
 
     token = AnalyseEtVariables(token);
     token = analyserSubRoutines(token);
     token = AnalyseCommand(token);
+
+    return token;
   }
 
   public String[] AnalyseEtVariables(String[] originalToken) {
@@ -59,11 +60,11 @@ public class SyntaxAnalyser {
           if (token[1].equals("sponto_vírgula")) {
             token = analyser.getNextToken();
           } else {
-            throw new Error("BLOCO SPONTOVIRGULA");
+            throw new Error("Error: Ausência de ';' no final da linha.");
           }
         }
       } else {
-        throw new Error("BLOCO SIDENTIFICADOR");
+        throw new Error("Error: Ausência de um 'identificador' para a variável.");
       }
       return token;
     }
@@ -79,11 +80,11 @@ public class SyntaxAnalyser {
           if (token[1].equals("svírgula")) {
             token = analyser.getNextToken();
             if (token[1].equals("sdoispontos")) {
-              throw new Error("BLOCO SPONTOVIRGULA");
+              throw new Error("Error: Ausência de ':' na declaração da variável.");
             }
           }
         } else {
-          throw new Error("BLOCO SPONTOVIRGULA");
+          throw new Error("Error: Ausência de ',' ou ':' na declaração das variáveis.");
         }
       }
       if (token[1].equals("sdoispontos")) {
@@ -97,7 +98,7 @@ public class SyntaxAnalyser {
 
   public String[] AnalyseType(String[] originalToken) {
     if (!originalToken[1].equals("sinteiro") && !originalToken[1].equals("sbooleano")) {
-      throw new Error("BLOCO SPONTOVIRGULA");
+      throw new Error("Error: Ausência do tipo de variável.");
     } else {
       String[] token = analyser.getNextToken();
       return token;
@@ -117,7 +118,7 @@ public class SyntaxAnalyser {
             break;
           }
         } else {
-          throw new Error("BLOCO SPONTOVIRGULA");
+          throw new Error("Error: Ausência de ';' no final da linha.");
         }
       }
       token = analyser.getNextToken();
@@ -175,7 +176,7 @@ public class SyntaxAnalyser {
         if (token[1].equals("sfecha_parênteses")) {
           token = analyser.getNextToken();
         } else {
-          throw new Error("Erro fecha parênteses");
+          throw new Error("Error: Ausência de ')' na declaração de uma leitura.");
         }
       }
     }
@@ -191,13 +192,13 @@ public class SyntaxAnalyser {
         if (token[1].equals("sfecha_parênteses")) {
           token = analyser.getNextToken();
         } else {
-          throw new Error("BLOCO SPONTOVIRGULA");
+          throw new Error("Error: Ausência de ')' na declaração de uma escrita.");
         }
       } else {
-        throw new Error("BLOCO SPONTOVIRGULA");
+        throw new Error("Error: Ausência de um 'identificador' na declaração de uma escrita.");
       }
     } else {
-      throw new Error("BLOCO SPONTOVIRGULA");
+      throw new Error("Error: Ausência de '(' na declaração de uma escrita.");
     }
     return token;
   }
@@ -211,7 +212,7 @@ public class SyntaxAnalyser {
       token = AnalyseSimpleCommand(token);
 
     } else {
-      throw new Error("Error sfaca");
+      throw new Error("Error: Ausência de um 'faca' na declaração de um enquanto.");
     }
   return token;
   }
@@ -235,21 +236,20 @@ public class SyntaxAnalyser {
   }
 
   public String[] analyserSubRoutines(String[] originalToken) {
-    String[] token;
-    while (originalToken[1].equals("sprocedimento") || originalToken[1].equals("sfuncao")) {
-      if (originalToken[1].equals("sprocedimento")) {
+    String[] token = originalToken;
+    while (token[1].equals("sprocedimento") || token[1].equals("sfuncao")) {
+      if (token[1].equals("sprocedimento")) {
         token = analyser_procedure_declaration();
       } else {
         token = analyser_function_declaration();
       }
-      if (originalToken[1].equals("sponto_vírgula")) {
+      if (token[1].equals("sponto_vírgula")) {
         token = analyser.getNextToken();
       } else {
           throw new Error("Error sponto_vírgula");
       }
-      return token;
     }
-    return originalToken;
+    return token;
   }
 
   public String[] analyser_procedure_declaration() {
@@ -329,7 +329,7 @@ public class SyntaxAnalyser {
     String[] token = originalToken;
     token = analyser_factor(token);
 
-    while (token[1].equals("smulti") || token[1].equals("sdiv") || token[1].equals("se")) {
+    while (token[1].equals("smult") || token[1].equals("sdiv") || token[1].equals("se")) {
       token = analyser.getNextToken();
       token = analyser_factor(token);
     }

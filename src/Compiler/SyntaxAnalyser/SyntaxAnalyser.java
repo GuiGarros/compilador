@@ -230,7 +230,7 @@ public class SyntaxAnalyser {
         token =  AnalyseSimpleCommand(token);
       }
     } else {
-      throw new Error("Error sentao");
+      throw new Error("Error: Ausência de 'entao' na declaração de uma operação condicional.");
     }
     return token;
   }
@@ -246,7 +246,7 @@ public class SyntaxAnalyser {
       if (token[1].equals("sponto_vírgula")) {
         token = analyser.getNextToken();
       } else {
-          throw new Error("Error sponto_vírgula");
+          throw new Error("Error: Ausência de ';' na declaração de um procedimento ou função.");
       }
     }
     return token;
@@ -259,10 +259,10 @@ public class SyntaxAnalyser {
       if (token[1].equals("sponto_vírgula")) {
         AnalyseBlock();
       } else {
-        throw new Error("Error sponto_vírgula");
+        throw new Error("Error: Ausência de ';' na declaração de  um procedimento.");
       }
     } else {
-      throw new Error("Error sidentificador");
+      throw new Error("Error: Ausência de 'identificador' na declaração de um procedimento.");
     }
     return token;
   }
@@ -282,13 +282,13 @@ public class SyntaxAnalyser {
             AnalyseBlock();
           }
         } else {
-          throw new Error("Error sinteiro || booleano");
+          throw new Error("Error: Ausência de um tipo na declaração de uma função.");
         }
       } else {
-        throw new Error("Error sdoipontos");
+        throw new Error("Error: Ausência de ':' na declaração de uma função.");
       }
     } else {
-      throw new Error("Error sidentificador");
+      throw new Error("Error: Ausência de 'identificador' na declaração de uma função.");
     }
     return token;
   }
@@ -348,20 +348,19 @@ public class SyntaxAnalyser {
       return analyser.getNextToken();
     } else if (token[1].equals("snao")) {
       token = analyser.getNextToken();
-      analyser_factor(token);
+      token = analyser_factor(token);
     } else if (token[1].equals("sabre_parênteses")) {
       token = analyser.getNextToken();
       token = analyser_expression(token);
       if (token[1].equals("sfecha_parênteses")) {
         return analyser.getNextToken();
       } else {
-        throw new Error("Error ausencia de fecha parenteses )");
+        throw new Error("Error: Ausência de ')'.");
       }
     } else if (token[0].equals("verdadeiro") || token[0].equals("falso")) {
       return analyser.getNextToken();
     } else {
-
-      throw new Error("Error");
+      throw new Error("Error: Ausência de verdadeiro ou falso.");
     }
 
     return token;

@@ -13,7 +13,7 @@ public class main {
 
     public static void main(String[] args) {
         FileReader reader = new FileReader();
-        reader.setFilePath("src/Tests/teste_2.txt");
+        reader.setFilePath("src/Tests/sint1.txt");
         String program = reader.readProgram();
 
         LexicalAnalyser analyser = new LexicalAnalyser();

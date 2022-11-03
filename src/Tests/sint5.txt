@@ -5,7 +5,7 @@ programa test1;
 var a,b,c: inteiro;
 
 
-inicio
+início
    se b > (c+ a*a)
     entao escreva(b)
     senao escreva(c)

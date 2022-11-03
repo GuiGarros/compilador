@@ -9,17 +9,17 @@ var a, x: inteiro;
        z: booleano;
 
 procedimento analisa2;
-inicio
+início
   leia(a);
   b:= a*a+(c div b) 
 fim;
 
-inicio
+início
   se x>1  entao
       x:= 0;
   leia(z);
   enquanto (a != 89) (a<= 1000)  {condicao de parada}
-  faca inicio
+  faca início
            a:= x+z
        fim;
   escreva(a)

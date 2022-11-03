@@ -2,9 +2,6 @@ package Compiler.SyntaxAnalyser;
 
 import Compiler.LexicalAnalyser.LexicalAnalyser;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class SyntaxAnalyser {
   private LexicalAnalyser analyser = null;
 
@@ -19,7 +16,7 @@ public class SyntaxAnalyser {
         token = analyser.getNextToken();
         if (token[1].equals("sidentificador")) {
           token = analyser.getNextToken();
-
+          Insert_table(token[0], token[1], ",");
           if (token[1].equals("sponto_vírgula")) {
             token = AnalyseBlock();
             if (token[1].equals("sponto")) {
@@ -27,7 +24,7 @@ public class SyntaxAnalyser {
               System.out.println("Fim do arquivo");
               break;
             } else {
-              throw new Error("Error: Ausência de um '.' no final do programa.");
+              throw new Error("Error: Ausência de um '.' no final do programa ou dois ';' na declaração do programa.");
             }
           } else {
             throw new Error("Error: Ausência de um ';'.");
@@ -75,16 +72,21 @@ public class SyntaxAnalyser {
     String[] token = originalToken;
     while (true) {
       if (token[1].equals("sidentificador")) {
-        token = analyser.getNextToken();
-        if (token[1].equals("svírgula") || token[1].equals("sdoispontos")) {
-          if (token[1].equals("svírgula")) {
-            token = analyser.getNextToken();
-            if (token[1].equals("sdoispontos")) {
-              throw new Error("Error: Ausência de ':' na declaração da variável.");
+        if (!Search_duplicatadevar_table(token[0])) {
+          Insert_table(token[0], token[1], ",");
+          token = analyser.getNextToken();
+          if (token[1].equals("svírgula") || token[1].equals("sdoispontos")) {
+            if (token[1].equals("svírgula")) {
+              token = analyser.getNextToken();
+              if (token[1].equals("sdoispontos")) {
+                throw new Error("Erro: Ausência de ':' na declaração da variável ou uma ',' a mais.");
+              }
             }
+          } else {
+            throw new Error("Erro: Ausência de ',' ou ':' na declaração das variáveis.");
           }
         } else {
-          throw new Error("Error: Ausência de ',' ou ':' na declaração das variáveis.");
+          throw new Error("Erro: Variável duplicada");
         }
       }
       if (token[1].equals("sdoispontos")) {
@@ -100,6 +102,7 @@ public class SyntaxAnalyser {
     if (!originalToken[1].equals("sinteiro") && !originalToken[1].equals("sbooleano")) {
       throw new Error("Error: Ausência do tipo de variável.");
     } else {
+      Insert_type_table(originalToken[0]);
       String[] token = analyser.getNextToken();
       return token;
     }
@@ -172,11 +175,16 @@ public class SyntaxAnalyser {
     if (token[1].equals("sabre_parênteses")) {
       token = analyser.getNextToken();
       if (token[1].equals("sidentificador")) {
-        token = analyser.getNextToken();
-        if (token[1].equals("sfecha_parênteses")) {
+        if (!Search_declarationvar_table(token[0])) {
+          // (Pesquisa em toda a tabela) Não entendi, a função Search_declarationvar_table vai fazer isso?
           token = analyser.getNextToken();
+          if (token[1].equals("sfecha_parênteses")) {
+            token = analyser.getNextToken();
+          } else {
+            throw new Error("Error: Ausência de ')' na declaração de uma leitura.");
+          }
         } else {
-          throw new Error("Error: Ausência de ')' na declaração de uma leitura.");
+          throw new Error("Erro");
         }
       }
     }
@@ -188,17 +196,21 @@ public class SyntaxAnalyser {
     if (token[1].equals("sabre_parênteses")) {
       token = analyser.getNextToken();
       if (token[1].equals("sidentificador")) {
-        token = analyser.getNextToken();
-        if (token[1].equals("sfecha_parênteses")) {
+        if (!Search_declarationvarfunc_table(token[0])) {
           token = analyser.getNextToken();
+          if (token[1].equals("sfecha_parênteses")) {
+            token = analyser.getNextToken();
+          } else {
+            throw new Error("Erro: Ausência de ')' na declaração de uma escrita.");
+          }
         } else {
-          throw new Error("Error: Ausência de ')' na declaração de uma escrita.");
+          throw new Error("Erro:");
         }
       } else {
-        throw new Error("Error: Ausência de um 'identificador' na declaração de uma escrita.");
+        throw new Error("Erro: Ausência de um 'identificador' na declaração de uma escrita.");
       }
     } else {
-      throw new Error("Error: Ausência de '(' na declaração de uma escrita.");
+      throw new Error("Erro: Ausência de '(' na declaração de uma escrita.");
     }
     return token;
   }
@@ -214,7 +226,7 @@ public class SyntaxAnalyser {
     } else {
       throw new Error("Error: Ausência de um 'faca' na declaração de um enquanto.");
     }
-  return token;
+    return token;
   }
 
   public String[] analyserIf() {
@@ -227,7 +239,7 @@ public class SyntaxAnalyser {
 
       if (token[1].equals("ssenao")) {
         token = analyser.getNextToken();
-        token =  AnalyseSimpleCommand(token);
+        token = AnalyseSimpleCommand(token);
       }
     } else {
       throw new Error("Error: Ausência de 'entao' na declaração de uma operação condicional.");
@@ -246,7 +258,7 @@ public class SyntaxAnalyser {
       if (token[1].equals("sponto_vírgula")) {
         token = analyser.getNextToken();
       } else {
-          throw new Error("Error: Ausência de ';' na declaração de um procedimento ou função.");
+        throw new Error("Error: Ausência de ';' na declaração de um procedimento ou função.");
       }
     }
     return token;
@@ -339,7 +351,7 @@ public class SyntaxAnalyser {
 
   public String[] analyser_factor(String[] originalToken) {
 
-    String [] token = originalToken;
+    String[] token = originalToken;
     System.out.println(token[1]);
     if (token[1].equals("sidentificador")) {
       analyser_call_function();
@@ -373,4 +385,25 @@ public class SyntaxAnalyser {
   public void analyser_call_function() {
 
   }
+
+  public void Insert_table(String token_lexem, String token_name, String s) {
+
+  }
+
+  public boolean Search_duplicatadevar_table(String originalToken) {
+    return true;
+  }
+
+  public void Insert_type_table(String token_lexem) {
+
+  }
+
+  public boolean Search_declarationvar_table(String token_lexem) {
+    return true;
+  }
+
+  public boolean Search_declarationvarfunc_table(String token_lexem) {
+    return true;
+  }
 }
+

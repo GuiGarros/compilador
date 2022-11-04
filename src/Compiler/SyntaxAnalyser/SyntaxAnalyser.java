@@ -16,7 +16,7 @@ public class SyntaxAnalyser {
         token = analyser.getNextToken();
         if (token[1].equals("sidentificador")) {
           token = analyser.getNextToken();
-          Insert_table(token[0], token[1], ",");
+          Insert_table(token[0], token[1],"","");
           if (token[1].equals("sponto_vírgula")) {
             token = AnalyseBlock();
             if (token[1].equals("sponto")) {
@@ -73,7 +73,7 @@ public class SyntaxAnalyser {
     while (true) {
       if (token[1].equals("sidentificador")) {
         if (!Search_duplicatadevar_table(token[0])) {
-          Insert_table(token[0], token[1], ",");
+          Insert_table(token[0], token[1], "","");
           token = analyser.getNextToken();
           if (token[1].equals("svírgula") || token[1].equals("sdoispontos")) {
             if (token[1].equals("svírgula")) {
@@ -176,7 +176,6 @@ public class SyntaxAnalyser {
       token = analyser.getNextToken();
       if (token[1].equals("sidentificador")) {
         if (!Search_declarationvar_table(token[0])) {
-          // (Pesquisa em toda a tabela) Não entendi, a função Search_declarationvar_table vai fazer isso?
           token = analyser.getNextToken();
           if (token[1].equals("sfecha_parênteses")) {
             token = analyser.getNextToken();
@@ -266,42 +265,58 @@ public class SyntaxAnalyser {
 
   public String[] analyser_procedure_declaration() {
     String[] token = analyser.getNextToken();
+    String[] level = new String[0]; // nível := "L" (marca ou novo galho)
     if (token[1].equals("sidentificador")) {
-      token = analyser.getNextToken();
-      if (token[1].equals("sponto_vírgula")) {
-        AnalyseBlock();
+      if (!Search_declarationproc_table(token[0])) {
+        Insert_table(token[0],token[1], String.valueOf(level));
+        token = analyser.getNextToken();
+        if (token[1].equals("sponto_vírgula")) {
+          AnalyseBlock();
+        } else {
+          throw new Error("Error: Ausência de ';' na declaração de  um procedimento.");
+        }
       } else {
-        throw new Error("Error: Ausência de ';' na declaração de  um procedimento.");
+        throw new Error("Erro:");
       }
     } else {
       throw new Error("Error: Ausência de 'identificador' na declaração de um procedimento.");
     }
+    // desempilha ou volta nível
     return token;
   }
 
   public String[] analyser_function_declaration() {
     String[] token = analyser.getNextToken();
-
+    String[] level = new String[0]; // nível := "L" (marca ou novo galho)
     if (token[1].equals("sidentificador")) {
-      token = analyser.getNextToken();
-
-      if (token[1].equals("sdoispontos")) {
+      if (!Search_declarationfunc_table(token[0])) {
+        Insert_table(token[0],token[1], String.valueOf(level));
         token = analyser.getNextToken();
-
-        if (token[1].equals("sinteiro") || token[1].equals("sbooleano")) {
+        if (token[1].equals("sdoispontos")) {
           token = analyser.getNextToken();
-          if (token[1].equals("sponto_vírgula")) {
-            AnalyseBlock();
+          if (token[1].equals("sinteiro") || token[1].equals("sbooleano")) {
+            if (token[1].equals("sinteiro")) {
+              // TABSIMB[pc].tipo := "função inteiro"
+            } else {
+              // TABSIMB[pc].tipo := "função booleana"
+            }
+            token = analyser.getNextToken();
+            if (token[1].equals("sponto_vírgula")) {
+              AnalyseBlock();
+            }
+          } else {
+            throw new Error("Error: Ausência de um tipo na declaração de uma função.");
           }
         } else {
-          throw new Error("Error: Ausência de um tipo na declaração de uma função.");
+          throw new Error("Error: Ausência de ':' na declaração de uma função.");
         }
       } else {
-        throw new Error("Error: Ausência de ':' na declaração de uma função.");
+        throw new Error("Erro:");
       }
     } else {
       throw new Error("Error: Ausência de 'identificador' na declaração de uma função.");
     }
+    // Desempilha ou volta nível
     return token;
   }
 
@@ -352,8 +367,11 @@ public class SyntaxAnalyser {
   public String[] analyser_factor(String[] originalToken) {
 
     String[] token = originalToken;
-    System.out.println(token[1]);
+    int level = 0, ind = 0;
     if (token[1].equals("sidentificador")) {
+      if (Search_table(token[0],level,ind)) {
+        // incompleto
+      }
       analyser_call_function();
       return analyser.getNextToken();
     } else if (token[1].equals("snúmero")) {
@@ -386,7 +404,7 @@ public class SyntaxAnalyser {
 
   }
 
-  public void Insert_table(String token_lexem, String token_name, String s) {
+  public void Insert_table(String token_lexem, String token_name, String tipo, String linha) {
 
   }
 
@@ -403,6 +421,18 @@ public class SyntaxAnalyser {
   }
 
   public boolean Search_declarationvarfunc_table(String token_lexem) {
+    return true;
+  }
+
+  public boolean Search_declarationproc_table(String token_lexem) {
+    return true;
+  }
+
+  public boolean Search_declarationfunc_table(String token_lexem) {
+    return true;
+  }
+
+  public boolean Search_table(String token_lexem, int level, int ind) {
     return true;
   }
 }

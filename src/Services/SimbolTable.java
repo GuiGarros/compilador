@@ -5,11 +5,11 @@ public class SimbolTable {
     public String lexema;
     public String name;
     public String type;
-    public String level;
+    public Integer level;
 
     public String line;
 
-    public SimbolTable(String lexema,String name, String type,String level,String line)
+    public SimbolTable(String lexema,String name, String type,Integer level,String line)
     {
         this.lexema = lexema;
         this.name = name;

@@ -11,15 +11,15 @@ public class SyntaxAnalyser {
   public void setAnalyser(LexicalAnalyser analyser) {
     this.analyser = analyser;
   }
-
-  public void AnalyzeSyntax() {
+ public void AnalyzeSyntax() {
+    int level = 0;
     while (true) {
       String[] token = analyser.getNextToken();
       if (token[1].equals("sprograma")) {
         token = analyser.getNextToken();
         if (token[1].equals("sidentificador")) {
           token = analyser.getNextToken();
-          Insert_table(new SimbolTable(token[1],"nomedeprograma","0","","")); ///lexema // inicio de programa // tipo null // level 0// linha sei la
+          Insert_table(new SimbolTable(token[0],"nomedeprograma","0",level,"")); ///lexema // inicio de programa // tipo null // level 0// linha sei la
           if (token[1].equals("sponto_vírgula")) {
             token = AnalyseBlock();
             if (token[1].equals("sponto")) {
@@ -76,7 +76,7 @@ public class SyntaxAnalyser {
     while (true) {
       if (token[1].equals("sidentificador")) {
         if (!Search_duplicatadevar_table(token[0])) {
-          Insert_table(token[0], token[1], "","");
+          Insert_table(new SimbolTable(token[0],"variável","0",level,""));
           token = analyser.getNextToken();
           if (token[1].equals("svírgula") || token[1].equals("sdoispontos")) {
             if (token[1].equals("svírgula")) {
@@ -105,7 +105,7 @@ public class SyntaxAnalyser {
     if (!originalToken[1].equals("sinteiro") && !originalToken[1].equals("sbooleano")) {
       throw new Error("Error: Ausência do tipo de variável.");
     } else {
-      Insert_type_table(originalToken[0]);
+      Insert_type_table(new SimbolTable(originalToken[0],null,null,null,null));
       String[] token = analyser.getNextToken();
       return token;
     }
@@ -271,7 +271,7 @@ public class SyntaxAnalyser {
     String[] level = new String[0]; // nível := "L" (marca ou novo galho)
     if (token[1].equals("sidentificador")) {
       if (!Search_declarationproc_table(token[0])) {
-        Insert_table(token[0],token[1], String.valueOf(level));
+        Insert_table(new SimbolTable(token[0],"procedimento",null,level+1,null));
         token = analyser.getNextToken();
         if (token[1].equals("sponto_vírgula")) {
           AnalyseBlock();
@@ -284,7 +284,7 @@ public class SyntaxAnalyser {
     } else {
       throw new Error("Error: Ausência de 'identificador' na declaração de um procedimento.");
     }
-    // desempilha ou volta nível
+    level -= level;
     return token;
   }
 
@@ -293,7 +293,7 @@ public class SyntaxAnalyser {
     String[] level = new String[0]; // nível := "L" (marca ou novo galho)
     if (token[1].equals("sidentificador")) {
       if (!Search_declarationfunc_table(token[0])) {
-        Insert_table(token[0],token[1], String.valueOf(level));
+        Insert_table(new SimbolTable(token[0],"",null,level+1,null));
         token = analyser.getNextToken();
         if (token[1].equals("sdoispontos")) {
           token = analyser.getNextToken();
@@ -319,7 +319,7 @@ public class SyntaxAnalyser {
     } else {
       throw new Error("Error: Ausência de 'identificador' na declaração de uma função.");
     }
-    // Desempilha ou volta nível
+    level -= level;
     return token;
   }
 
@@ -370,12 +370,15 @@ public class SyntaxAnalyser {
   public String[] analyser_factor(String[] originalToken) {
 
     String[] token = originalToken;
-    int level = 0, ind = 0;
     if (token[1].equals("sidentificador")) {
-      if (Search_table(token[0],level,ind)) {
-        // incompleto
-      }
-      analyser_call_function();
+//      if (Search_table(token[0],level,ind)) {
+//        if (TabSimb[ind].tipo = "função inteiro" || TabSimb[ind.tipo = "função booleano"]) {
+//          analyser_call_function();
+//        }
+//        token = analyser.getNextToken();
+//      } else {
+//        throw Error("Erro:");
+//      }
       return analyser.getNextToken();
     } else if (token[1].equals("snúmero")) {
       return analyser.getNextToken();
@@ -417,7 +420,7 @@ public class SyntaxAnalyser {
     return true;
   }
 
-  public void Insert_type_table(String token_lexem) {
+  public void Insert_type_table(SimbolTable lexem) {
 
   }
 

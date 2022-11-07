@@ -1,9 +1,12 @@
 package Compiler.SyntaxAnalyser;
 
 import Compiler.LexicalAnalyser.LexicalAnalyser;
+import Services.SimbolTable;
+import Services.Stack;
 
 public class SyntaxAnalyser {
   private LexicalAnalyser analyser = null;
+  private Stack simbolTableStack = new Stack();
 
   public void setAnalyser(LexicalAnalyser analyser) {
     this.analyser = analyser;
@@ -16,7 +19,7 @@ public class SyntaxAnalyser {
         token = analyser.getNextToken();
         if (token[1].equals("sidentificador")) {
           token = analyser.getNextToken();
-          Insert_table(token[0], token[1],"","");
+          Insert_table(new SimbolTable(token[1],"nomedeprograma","0","","")); ///lexema // inicio de programa // tipo null // level 0// linha sei la
           if (token[1].equals("sponto_vírgula")) {
             token = AnalyseBlock();
             if (token[1].equals("sponto")) {
@@ -404,7 +407,9 @@ public class SyntaxAnalyser {
 
   }
 
-  public void Insert_table(String token_lexem, String token_name, String tipo, String linha) {
+  public void Insert_table(SimbolTable linha) {
+
+    simbolTableStack.push(linha);
 
   }
 

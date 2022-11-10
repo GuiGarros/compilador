@@ -7,19 +7,19 @@ import Services.Stack;
 public class SyntaxAnalyser {
   private LexicalAnalyser analyser = null;
   private Stack simbolTableStack = new Stack();
-
+  public int level = 0;
   public void setAnalyser(LexicalAnalyser analyser) {
     this.analyser = analyser;
   }
  public void AnalyzeSyntax() {
-    int level = 0;
+
     while (true) {
       String[] token = analyser.getNextToken();
       if (token[1].equals("sprograma")) {
         token = analyser.getNextToken();
         if (token[1].equals("sidentificador")) {
           token = analyser.getNextToken();
-          Insert_table(new SimbolTable(token[0],"nomedeprograma","0",level,"")); ///lexema // inicio de programa // tipo null // level 0// linha sei la
+          Insert_table(new SimbolTable(token[0],"nomedeprograma",level,"","")); ///lexema // inicio de programa // tipo null // level 0// linha sei la
           if (token[1].equals("sponto_vírgula")) {
             token = AnalyseBlock();
             if (token[1].equals("sponto")) {
@@ -75,8 +75,8 @@ public class SyntaxAnalyser {
     String[] token = originalToken;
     while (true) {
       if (token[1].equals("sidentificador")) {
-        if (!Search_duplicatadevar_table(token[0])) {
-          Insert_table(new SimbolTable(token[0],"variável","0",level,""));
+        if (!Search_duplicatadevar_table(new SimbolTable(token[0],"variável",level,"",""))) {
+          Insert_table(new SimbolTable(token[0],"variável",level,"",""));
           token = analyser.getNextToken();
           if (token[1].equals("svírgula") || token[1].equals("sdoispontos")) {
             if (token[1].equals("svírgula")) {
@@ -105,7 +105,7 @@ public class SyntaxAnalyser {
     if (!originalToken[1].equals("sinteiro") && !originalToken[1].equals("sbooleano")) {
       throw new Error("Error: Ausência do tipo de variável.");
     } else {
-      Insert_type_table(new SimbolTable(originalToken[0],null,null,null,null));
+      Insert_table(new SimbolTable(originalToken[0],"variavel",null,null,null));
       String[] token = analyser.getNextToken();
       return token;
     }
@@ -178,7 +178,7 @@ public class SyntaxAnalyser {
     if (token[1].equals("sabre_parênteses")) {
       token = analyser.getNextToken();
       if (token[1].equals("sidentificador")) {
-        if (!Search_declarationvar_table(token[0])) {
+        if (Search_declarationvar_table(token[0])) {
           token = analyser.getNextToken();
           if (token[1].equals("sfecha_parênteses")) {
             token = analyser.getNextToken();
@@ -186,9 +186,13 @@ public class SyntaxAnalyser {
             throw new Error("Error: Ausência de ')' na declaração de uma leitura.");
           }
         } else {
-          throw new Error("Erro");
+          throw new Error("Variavel não declarada");
         }
+      } else {
+        throw  new Error("sidentificador");
       }
+    } else {
+      throw  new Error("sabre_parênteses");
     }
     return token;
   }
@@ -198,7 +202,7 @@ public class SyntaxAnalyser {
     if (token[1].equals("sabre_parênteses")) {
       token = analyser.getNextToken();
       if (token[1].equals("sidentificador")) {
-        if (!Search_declarationvarfunc_table(token[0])) {
+        if (Search_declarationvarfunc_table(token[0])) {
           token = analyser.getNextToken();
           if (token[1].equals("sfecha_parênteses")) {
             token = analyser.getNextToken();
@@ -206,7 +210,7 @@ public class SyntaxAnalyser {
             throw new Error("Erro: Ausência de ')' na declaração de uma escrita.");
           }
         } else {
-          throw new Error("Erro:");
+          throw new Error("Varivael não declarada");
         }
       } else {
         throw new Error("Erro: Ausência de um 'identificador' na declaração de uma escrita.");
@@ -268,10 +272,10 @@ public class SyntaxAnalyser {
 
   public String[] analyser_procedure_declaration() {
     String[] token = analyser.getNextToken();
-    String[] level = new String[0]; // nível := "L" (marca ou novo galho)
+    level++;
     if (token[1].equals("sidentificador")) {
       if (!Search_declarationproc_table(token[0])) {
-        Insert_table(new SimbolTable(token[0],"procedimento",null,level+1,null));
+        Insert_table(new SimbolTable(token[0],"procedimento",level,null,null));
         token = analyser.getNextToken();
         if (token[1].equals("sponto_vírgula")) {
           AnalyseBlock();
@@ -279,29 +283,28 @@ public class SyntaxAnalyser {
           throw new Error("Error: Ausência de ';' na declaração de  um procedimento.");
         }
       } else {
-        throw new Error("Erro:");
+        throw new Error("Dupla ocorrencia de função");
       }
     } else {
       throw new Error("Error: Ausência de 'identificador' na declaração de um procedimento.");
     }
-    level -= level;
+    level--;
     return token;
   }
 
   public String[] analyser_function_declaration() {
     String[] token = analyser.getNextToken();
-    String[] level = new String[0]; // nível := "L" (marca ou novo galho)
+    level++;
     if (token[1].equals("sidentificador")) {
       if (!Search_declarationfunc_table(token[0])) {
-        Insert_table(new SimbolTable(token[0],"",null,level+1,null));
         token = analyser.getNextToken();
         if (token[1].equals("sdoispontos")) {
           token = analyser.getNextToken();
           if (token[1].equals("sinteiro") || token[1].equals("sbooleano")) {
             if (token[1].equals("sinteiro")) {
-              // TABSIMB[pc].tipo := "função inteiro"
+              Insert_table(new SimbolTable(token[0],"sinteiro",level+1,null,null)); ///lembrar de colocar o rotulo
             } else {
-              // TABSIMB[pc].tipo := "função booleana"
+              Insert_table(new SimbolTable(token[0],"sbooleano",level+1,null,null)); //lembrar de colocar o rotulo
             }
             token = analyser.getNextToken();
             if (token[1].equals("sponto_vírgula")) {
@@ -314,12 +317,12 @@ public class SyntaxAnalyser {
           throw new Error("Error: Ausência de ':' na declaração de uma função.");
         }
       } else {
-        throw new Error("Erro:");
+        throw new Error("Dupla ocorrencia de função");
       }
     } else {
       throw new Error("Error: Ausência de 'identificador' na declaração de uma função.");
     }
-    level -= level;
+    level--;
     return token;
   }
 
@@ -370,15 +373,11 @@ public class SyntaxAnalyser {
   public String[] analyser_factor(String[] originalToken) {
 
     String[] token = originalToken;
+    String[] tipo;
     if (token[1].equals("sidentificador")) {
-//      if (Search_table(token[0],level,ind)) {
-//        if (TabSimb[ind].tipo = "função inteiro" || TabSimb[ind.tipo = "função booleano"]) {
-//          analyser_call_function();
-//        }
-//        token = analyser.getNextToken();
-//      } else {
-//        throw Error("Erro:");
-//      }
+      if (!Search_table(token[0],level)) {
+        token = analyser.getNextToken();
+      }
       return analyser.getNextToken();
     } else if (token[1].equals("snúmero")) {
       return analyser.getNextToken();
@@ -416,8 +415,16 @@ public class SyntaxAnalyser {
 
   }
 
-  public boolean Search_duplicatadevar_table(String originalToken) {
-    return true;
+  public boolean Search_duplicatadevar_table(SimbolTable value) {///1
+
+     if(!simbolTableStack.find(value))
+     {
+       if(!simbolTableStack.getIdentificador(value))
+       {
+         return false;
+       }
+     }
+     return true;
   }
 
   public void Insert_type_table(SimbolTable lexem) {
@@ -425,6 +432,7 @@ public class SyntaxAnalyser {
   }
 
   public boolean Search_declarationvar_table(String token_lexem) {
+  // return simbolTableStack.find(token_lexem);
     return true;
   }
 
@@ -440,8 +448,18 @@ public class SyntaxAnalyser {
     return true;
   }
 
-  public boolean Search_table(String token_lexem, int level, int ind) {
-    return true;
+  public boolean Search_table(String token_lexem, int level) {
+
+    if(simbolTableStack.find())
+    {
+      throw new Error("ausencia de identificador");
+    }
+
+    if (TabSimb[ind].tipo = "função inteiro" || TabSimb[ind.tipo = "função booleano"]) {
+      analyser_call_function();
+      return true;
+    }
+    return false;
   }
 }
 

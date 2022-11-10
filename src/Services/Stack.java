@@ -15,16 +15,25 @@ public class Stack { //simbol table
   }
 
   public boolean find(SimbolTable value)
-  {
-    if(stack.stream().findAny().isEmpty())
+  {/
+
+    if(stack.indexOf(value) == -1)
     {
       return false; //not exists
     }
-    else
+
+    return true;
+  }
+
+  public boolean getIdentificador(SimbolTable value)
+  {
+    for(int i = 0; i < stack.size(); i++)
     {
-      return true; //exists
+      if(stack.get(i).lexema.equals(value.lexema) && !stack.get(i).type.equals("variável"))
+      {
+        return true;
+      }
     }
-
-
+    return false;
   }
 }

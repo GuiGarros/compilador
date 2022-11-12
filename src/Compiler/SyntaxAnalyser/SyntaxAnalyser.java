@@ -105,7 +105,7 @@ public class SyntaxAnalyser {
     if (!originalToken[1].equals("sinteiro") && !originalToken[1].equals("sbooleano")) {
       throw new Error("Error: Ausência do tipo de variável.");
     } else {
-      Insert_table(new SimbolTable(originalToken[0],"variavel",null,null,null));
+      Insert_table(new SimbolTable(originalToken[0],"variavel",0,null,null));
       String[] token = analyser.getNextToken();
       return token;
     }
@@ -178,7 +178,7 @@ public class SyntaxAnalyser {
     if (token[1].equals("sabre_parênteses")) {
       token = analyser.getNextToken();
       if (token[1].equals("sidentificador")) {
-        if (Search_declarationvar_table(token[0])) {
+        if (Search_declarationvar_table(token[0],level)) {
           token = analyser.getNextToken();
           if (token[1].equals("sfecha_parênteses")) {
             token = analyser.getNextToken();
@@ -210,7 +210,7 @@ public class SyntaxAnalyser {
             throw new Error("Erro: Ausência de ')' na declaração de uma escrita.");
           }
         } else {
-          throw new Error("Varivael não declarada");
+          throw new Error("Varivael ou função não declarada");
         }
       } else {
         throw new Error("Erro: Ausência de um 'identificador' na declaração de uma escrita.");
@@ -302,9 +302,9 @@ public class SyntaxAnalyser {
           token = analyser.getNextToken();
           if (token[1].equals("sinteiro") || token[1].equals("sbooleano")) {
             if (token[1].equals("sinteiro")) {
-              Insert_table(new SimbolTable(token[0],"sinteiro",level+1,null,null)); ///lembrar de colocar o rotulo
+              Insert_table(new SimbolTable(token[0],"funcaointeiro",level+1,null,null)); ///lembrar de colocar o rotulo
             } else {
-              Insert_table(new SimbolTable(token[0],"sbooleano",level+1,null,null)); //lembrar de colocar o rotulo
+              Insert_table(new SimbolTable(token[0],"funcaobooleano",level+1,null,null)); //lembrar de colocar o rotulo
             }
             token = analyser.getNextToken();
             if (token[1].equals("sponto_vírgula")) {
@@ -417,45 +417,54 @@ public class SyntaxAnalyser {
 
   public boolean Search_duplicatadevar_table(SimbolTable value) {///1
 
-     if(!simbolTableStack.find(value))
+     if(!simbolTableStack.findVariable(value.lexema, value.level))
      {
        if(!simbolTableStack.getIdentificador(value))
        {
          return false;
        }
      }
+
      return true;
   }
 
-  public void Insert_type_table(SimbolTable lexem) {
+  public boolean Search_declarationvar_table(String value, int level) {
+
+    return simbolTableStack.findVariable(value, level);
 
   }
 
-  public boolean Search_declarationvar_table(String token_lexem) {
-  // return simbolTableStack.find(token_lexem);
-    return true;
+  public boolean Search_declarationvarfunc_table(String value,int level) {
+
+    if(simbolTableStack.findVariable(value,level))
+    {
+      if(simbolTableStack.findIdentifier(value)) return true;
+    }
+    return false;
   }
 
-  public boolean Search_declarationvarfunc_table(String token_lexem) {
-    return true;
+  public boolean Search_declarationproc_table(String value) {
+
+    if(simbolTableStack.findProcedure(value)) return true;
+
+    return false;
   }
 
-  public boolean Search_declarationproc_table(String token_lexem) {
-    return true;
+  public boolean Search_declarationfunc_table(String value) {
+
+    if(simbolTableStack.findFunction(value)) return true;
+
+    return false;
   }
 
-  public boolean Search_declarationfunc_table(String token_lexem) {
-    return true;
-  }
+  public boolean Search_table(String value, int level) {
 
-  public boolean Search_table(String token_lexem, int level) {
-
-    if(simbolTableStack.find())
+    if(!simbolTableStack.findIdentifier(value) && !simbolTableStack.findVariable(value,level))
     {
       throw new Error("ausencia de identificador");
     }
 
-    if (TabSimb[ind].tipo = "função inteiro" || TabSimb[ind.tipo = "função booleano"]) {
+    if (simbolTableStack.findFunction(value)) {
       analyser_call_function();
       return true;
     }

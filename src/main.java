@@ -1,7 +1,12 @@
-import Compiler.LexicalAnalyser.LexicalAnalyser;
-import Compiler.SyntaxAnalyser.SyntaxAnalyser;
+//import Compiler.LexicalAnalyser.LexicalAnalyser;
+//import Compiler.SyntaxAnalyser.SyntaxAnalyser;
+//import Services.FileReader;
+import Interfaces.FileChooser;
+import Interfaces.MainWindow;
 import Services.FileReader;
 import Services.Stack;
+
+import Interfaces.Window;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,23 +15,37 @@ import java.util.Arrays;
 public class main {
     static ArrayList<String[]> tokenList = new ArrayList<String[]>();
     static Stack symbolsTable = new Stack();
+    FileReader reader = new FileReader();
+    String program = "";
 
     public static void main(String[] args) {
-        FileReader reader = new FileReader();
-        reader.setFilePath("src/Tests/sint19.txt");
-        String program = reader.readProgram();
+//        reader.setFilePath("src/Tests/sint19.txt");
+//        String program = reader.readProgram();
+//
+//        LexicalAnalyser analyser = new LexicalAnalyser();
+//        analyser.setCodeReaded(program);
+//        analyser.AnalyseLexemes();
+//
+//
+//
+//        System.out.println(symbolsTable.stack);
+//
+//        SyntaxAnalyser syntax = new SyntaxAnalyser();
+//
+//        syntax.setAnalyser(analyser);
+//        syntax.AnalyzeSyntax();
+//        Window appWindow = new Window();
+//
+//        appWindow.createButton("Teste 1");
+//        appWindow.createButton("Teste 2");
+//        appWindow.createTextInput(10);
+//        appWindow.createFileInput();
+//
+//        appWindow.setWindowStatus(true);
 
-        LexicalAnalyser analyser = new LexicalAnalyser();
-        analyser.setCodeReaded(program);
-        analyser.AnalyseLexemes();
+//        FileChooser chooser = new FileChooser();
+//        chooser.openChooser();
+        MainWindow wind = new MainWindow();
 
-
-
-        System.out.println(symbolsTable.stack);
-
-        SyntaxAnalyser syntax = new SyntaxAnalyser();
-
-        syntax.setAnalyser(analyser);
-        syntax.AnalyzeSyntax();
     }
 }

@@ -8,13 +8,18 @@ import java.util.ArrayList;
 public class FileReader {
   private String filePath;
   String code = "";
+  public String spacedCode = "";
   public String readProgram() {
     try {
+      spacedCode = "";
+      code = "";
+
       File myObj = new File(filePath);
       Scanner myReader = new Scanner(myObj);
       while (myReader.hasNextLine()) {
         String data = myReader.nextLine();
         code += " " + data;
+        spacedCode += '\n' + data;
       }
       myReader.close();
     } catch (FileNotFoundException e) {

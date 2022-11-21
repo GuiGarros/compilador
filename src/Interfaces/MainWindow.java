@@ -17,6 +17,8 @@ public class MainWindow {
   String program = null;
   FileReader reader = new FileReader();
 
+  CompileWindow compiler = new CompileWindow();
+
 
   public MainWindow(){
     AppWindow.createText("Arquivo");
@@ -33,10 +35,12 @@ public class MainWindow {
 
     AppWindow.createText("Erros");
 
-    codeInput =  AppWindow.createTextInput(980, 200, 0,0, true);
+    errorInput =  AppWindow.createTextInput(980, 200, 0,0, true);
 
 
     JButton button  = AppWindow.createButton("Compilar");
+    button.setActionCommand("open_compiler");
+    button.addActionListener(this::actionPerformed);
 
     AppWindow.setWindowStatus(true);
   }
@@ -50,8 +54,16 @@ public class MainWindow {
         program = reader.readProgram();
         codeInput.setText(reader.spacedCode);
         break;
+      case "open_compiler":
+        this.openCompilation();
+        break;
       default:
         break;
     }
+  }
+
+  public void openCompilation () {
+    System.out.println("a");
+    compiler.setWindowStatus(true);
   }
 }

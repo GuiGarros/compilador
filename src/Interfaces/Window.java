@@ -1,10 +1,13 @@
 package Interfaces;
 import javax.swing.*;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.util.Arrays;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 public class Window {
-  static JFrame frame = new JFrame("Título da janela");
+
+  JFrame frame = new JFrame("Título da janela");
   FlowLayout flow = new FlowLayout();
   Container box = frame.getContentPane();
 
@@ -62,6 +65,38 @@ public class Window {
 
     return text;
   }
+
+  public JLabel createText(String textValue, int width, int height){
+    JLabel text = new JLabel(textValue);
+    text.setAlignmentX(width);
+    box.add(text);
+
+    return text;
+  }
+
+  public JTable createTable(String[] columns, int numRows, int width,int height){
+    DefaultTableModel modelo = new DefaultTableModel();
+    JTable table = new JTable(modelo);
+    JTableHeader tableHeader = new JTableHeader();
+    Dimension size = new Dimension(width,height);
+
+    for(String col : columns){
+      modelo.addColumn(col);
+    }
+
+    table.getTableHeader().setDefaultRenderer(new SimpleHeaderRenderer());
+
+    modelo.setNumRows(numRows);
+
+    JScrollPane scroll = new JScrollPane (table,
+            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+    scroll.setPreferredSize(size);
+
+    box.add(scroll);
+
+    return table;
+  }
+
 
   public Container getBox(){
     return box;

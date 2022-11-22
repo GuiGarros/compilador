@@ -1,6 +1,7 @@
 package Compiler.SyntaxAnalyser;
 
 import Compiler.LexicalAnalyser.LexicalAnalyser;
+import java.util.LinkedList;
 import Services.SimbolTable;
 import Services.Stack;
 
@@ -169,7 +170,9 @@ public class SyntaxAnalyser {
 
   public String[] analyser_atrib(String[] originalToken) {
     String[] token = analyser.getNextToken();
-    token = analyser_expression(token);
+    LinkedList <String[]> expression = new LinkedList <String[]>();
+    expression = analyser_expression(token,expression);
+    token = expression.getLast();
     return token;
   }
 
@@ -202,7 +205,7 @@ public class SyntaxAnalyser {
     if (token[1].equals("sabre_parênteses")) {
       token = analyser.getNextToken();
       if (token[1].equals("sidentificador")) {
-        if (Search_declarationvarfunc_table(token[0])) {
+        if (Search_declarationvarfunc_table(token[0], level)) {
           token = analyser.getNextToken();
           if (token[1].equals("sfecha_parênteses")) {
             token = analyser.getNextToken();
@@ -223,7 +226,10 @@ public class SyntaxAnalyser {
 
   public String[] analyserWhile() {
     String[] token = analyser.getNextToken();
-    token = analyser_expression(token);
+    LinkedList <String[]> expression = new LinkedList <String[]>();
+    expression = analyser_expression(token,expression);
+    token = expression.getLast();
+
 
     if (token[1].equals("sfaca")) {
       token = analyser.getNextToken();
@@ -237,7 +243,9 @@ public class SyntaxAnalyser {
 
   public String[] analyserIf() {
     String[] token = analyser.getNextToken();
-    token = analyser_expression(token);
+    LinkedList <String[]> expression = new LinkedList <String[]>();
+    expression = analyser_expression(token,expression);
+    token = expression.getLast();
 
     if (token[1].equals("sentao")) {
       token = analyser.getNextToken();
@@ -326,9 +334,12 @@ public class SyntaxAnalyser {
     return token;
   }
 
-  public String[] analyser_expression(String[] originalToken) {
+  public LinkedList<String[]> analyser_expression(String[] originalToken, LinkedList<String[]> expression) {
     String[] token = originalToken;
-    token = analyser_expression_simple(token);
+
+    expression = analyser_expression_simple(token,expression);
+    token = expression.getLast();
+
 
     if (
             token[1].equals("smaior") ||
@@ -338,75 +349,111 @@ public class SyntaxAnalyser {
                     token[1].equals("sdif") ||
                     token[1].equals("sig")) {
       token = analyser.getNextToken();
-      token = analyser_expression_simple(token);
+      expression.addLast(token);
+      expression = analyser_expression_simple(token,expression);
+      token = expression.getLast();
     }
 
-    return token;
+    return expression;
   }
 
-  public String[] analyser_expression_simple(String[] originalToken) {
+  public LinkedList<String[]> analyser_expression_simple(String[] originalToken, LinkedList<String[]> expression) {
     String[] token = originalToken;
-    if (token[1].equals("smais") || token[1].equals("smenos")) {
+
+    if (token[1].equals("smais") || token[1].equals("smenos")) { //unitario ai nesse caso passar o -u
+      if(token[1].equals("smenos"))
+      {
+        token = expression.removeLast();
+        token[1] = "-u";
+        expression.addLast(token);
+      }
       token = analyser.getNextToken();
+      expression.addLast(token);
     }
-    token = analyser_term(token);
+
+    expression = analyser_term(token,expression);
+    token = expression.getLast();
+
     while (token[1].equals("smais") || token[1].equals("smenos") || token[1].equals("sou")) {
       token = analyser.getNextToken();
-      token = analyser_term(token);
+      expression.addLast(token);
+      expression = analyser_term(token,expression);
+      token = expression.getLast();
     }
 
-    return token;
+    return expression;
   }
 
-  public String[] analyser_term(String[] originalToken) {
+  public LinkedList<String[]> analyser_term(String[] originalToken, LinkedList<String[]> expression) {
     String[] token = originalToken;
-    token = analyser_factor(token);
+    expression = analyser_factor(token, expression);
+    token = expression.getLast();
 
     while (token[1].equals("smult") || token[1].equals("sdiv") || token[1].equals("se")) {
       token = analyser.getNextToken();
-      token = analyser_factor(token);
+      expression.addLast(token);
+      expression = analyser_factor(token,expression);
+      token =  expression.getLast();
     }
 
-    return token;
+    return expression;
   }
 
-  public String[] analyser_factor(String[] originalToken) {
+  public  LinkedList<String[]> analyser_factor(String[] originalToken, LinkedList<String[]> expression) {
 
     String[] token = originalToken;
     String[] tipo;
     if (token[1].equals("sidentificador")) {
       if (!Search_table(token[0],level)) {
         token = analyser.getNextToken();
+        expression.addLast(token);
       }
-      return analyser.getNextToken();
+      token = analyser.getNextToken();
+      expression.addLast(token);
+      return expression;
     } else if (token[1].equals("snúmero")) {
-      return analyser.getNextToken();
+      token = analyser.getNextToken();
+      expression.addLast(token);
+      return expression;
     } else if (token[1].equals("snao")) {
       token = analyser.getNextToken();
-      token = analyser_factor(token);
+      expression.addLast(token);
+      expression = analyser_factor(token,expression);
     } else if (token[1].equals("sabre_parênteses")) {
       token = analyser.getNextToken();
-      token = analyser_expression(token);
+      expression.addLast(token);
+      expression = analyser_expression(token,expression);
       if (token[1].equals("sfecha_parênteses")) {
-        return analyser.getNextToken();
+        token = analyser.getNextToken();
+        expression.addLast(token);
+        return expression;
       } else {
         throw new Error("Error: Ausência de ')'.");
       }
     } else if (token[0].equals("verdadeiro") || token[0].equals("falso")) {
-      return analyser.getNextToken();
+      token = analyser.getNextToken();
+      expression.addLast(token);
+      return expression;
     } else {
       throw new Error("Error: Ausência de verdadeiro ou falso.");
     }
 
-    return token;
+    return expression;
   }
 
   public void analyser_call_procedure() {
 
   }
+ soma:a+b;
 
-  public void analyser_call_function() {
-
+  public void analyser_call_function(SimbolTable value) {
+    // te.token = getToken(file);
+    // te.expression += te.token.lexema + " ";
+    if (!Search_declarationfunc_table(value.lexema)) {
+      throw new Error("Função não declarada");
+    }
+    //te.token = getToken(file);
+    // return te;
   }
 
   public void Insert_table(SimbolTable linha) {
@@ -465,10 +512,27 @@ public class SyntaxAnalyser {
     }
 
     if (simbolTableStack.findFunction(value)) {
-      analyser_call_function();
+      //analyser_call_function();
       return true;
     }
     return false;
+  }
+
+  public LinkedList<String[]> posfixo(LinkedList<String[]> expression) {
+
+    LinkedList<String[]> Pilha = new LinkedList<String[]>();
+    LinkedList<String> saida = new LinkedList<String>();
+
+    for(int i = 0; i < expression.size(); i++)
+    {
+      String[] auxToken = expression.get(i);
+
+      if(auxToken[1].equals("snúmero") || auxToken[1].equals("sidentificador") || auxToken[1].equals("sverdadeiro") || auxToken[1].equals("sfalso"))
+      {
+        saida.addLast(auxToken[0]);
+      }
+    }
+
   }
 }
 

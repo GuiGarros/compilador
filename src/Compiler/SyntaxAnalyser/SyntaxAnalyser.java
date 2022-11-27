@@ -367,7 +367,7 @@ public class SyntaxAnalyser {
         if (token[1].equals("smais") || token[1].equals("smenos")) { //unitario ai nesse caso passar o -u
             if (token[1].equals("smenos")) {
                 token = expression.removeLast();
-                token[1] = "-u";
+                token[0] = "-u";
                 expression.addLast(token);
             }
             token = analyser.getNextToken();
@@ -518,7 +518,7 @@ public class SyntaxAnalyser {
         return false;
     }
 
-    public LinkedList<String[]> posfixo(LinkedList<String[]> expression) {
+    public LinkedList<String> posfixo(LinkedList<String[]> expression) {
 
         LinkedList<String[]> pilha = new LinkedList<String[]>();
         LinkedList<String> saida = new LinkedList<String>();
@@ -529,32 +529,32 @@ public class SyntaxAnalyser {
             if (auxToken[1].equals("snúmero") || auxToken[1].equals("sidentificador") || auxToken[1].equals("sverdadeiro") || auxToken[1].equals("sfalso")) {
                 saida.addLast(auxToken[0]);
             } else if (auxToken[1].equals("sabre_parênteses")) {
-                pilha.addlast(auxToken);
+                pilha.addLast(auxToken);
             } else if (auxToken[1].equals("sfecha_parênteses")) {
                 int topo = (pilha.size() - 1);
-                while (!("(".equals(pilha.getlast()))) {
-                    saida.addlast(pilha.getlast());
-                    pilha.removelast();
+                while (!("(".equals(pilha.getLast()))) {
+                    saida.addLast(pilha.getLast()[1]);
+                    pilha.removeLast();
                     topo--;
                 }
-                pilha.removelast();
+                pilha.removeLast();
             } else {
                 if (pilha.size() == 0) {
-                    pilha.addlast(auxToken);
+                    pilha.addLast(auxToken);
                 } else {
                     int operador = 0, operador_pilha = 0;
                     int aux_topo_pilha = (pilha.size() - 1);
 
                     while (operador_pilha >= operador && pilha.size() != 0) {
-                        operador = prioridadeOperador(auxToken);
-                        operador_piha = prioridadeOperador(pilha.get(aux_topo_pilha));
+                        operador = operartionPriority(auxToken);
+                        operador_pilha = operartionPriority(pilha.get(aux_topo_pilha));
                         if (operador_pilha >= operador) {
-                            saida.addlast(pilha.get(aux_topo_pilha));
-                            pilha.removelast();
+                            saida.addLast(pilha.get(aux_topo_pilha)[1]);
+                            pilha.removeLast();
                             aux_topo_pilha--;
                         }
                         if (operador_pilha < operador || pilha.size() != 0) {
-                            pilha.addlast(auxToken);
+                            pilha.addLast(auxToken);
                         }
                     }
                 }
@@ -563,17 +563,17 @@ public class SyntaxAnalyser {
         int aux_topo_pilha = (pilha.size() - 1);
         if (pilha.size() != 0) {
             for (int i = aux_topo_pilha; i >= 0; i--) {
-                saida.addlast(pilha.get(i));
-                // pilha.remove(i) tem que fazer essa funcao
+                saida.addLast(pilha.get(i)[1]);
+                 pilha.remove(i);
             }
         }
 
         return saida;
     }
 
-    public int prioridadeOperador(String[] token) {
+    public int operartionPriority(String[] token) {
         if (null != token[0]) {
-            if (token[0].equals("+u") || token[0].equals("-u") || token[0].equals("nao")) { //Não sei se precisa ver o "+u"
+            if (token[0].equals("-u") || token[0].equals("nao")) { //Não sei se precisa ver o "+u"
                 return 5;
             } else if (token[0].equals("*") || token[0].equals("div")) {
                 return 4;
@@ -589,5 +589,7 @@ public class SyntaxAnalyser {
         }
         return -1;
     }
+
+
 }
 

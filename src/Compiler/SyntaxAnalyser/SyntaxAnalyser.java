@@ -589,7 +589,5 @@ public class SyntaxAnalyser {
         }
         return -1;
     }
-
-
 }
 

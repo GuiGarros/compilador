@@ -3,11 +3,14 @@ package Interfaces;
 import Services.FileReader;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
 public class MainWindow {
   Window AppWindow = new Window();
+  Container box = null;
+
   FileChooser FilePicker = new FileChooser();
   File selectedFile = null;
   JTextArea fileInput = null;
@@ -22,23 +25,29 @@ public class MainWindow {
 
   public MainWindow(){
     AppWindow.createText("Arquivo");
-    fileInput =  AppWindow.createTextInput(300, 20, 0,0, false);
+    box = AppWindow.getBox();
+
+    fileInput =  AppWindow.createTextInput(300, 20, 0,0);
+    box.add(fileInput);
 
     JButton chooserButton  = AppWindow.createButton("Abrir Arquivo");
+    box.add(chooserButton);
     chooserButton.setActionCommand("open_chooser");
     chooserButton.addActionListener(this::actionPerformed);
 
-    AppWindow.createText("Código");
+    box.add(AppWindow.createText("Código"));
 
 
-    codeInput =  AppWindow.createTextInput(980, 400, 0,0, true);
+    codeInput =  AppWindow.createTextInput(980, 400, 0,0);
+    box.add(AppWindow.createScroll(980,400,codeInput));
 
-    AppWindow.createText("Erros");
+    box.add(AppWindow.createText("Erros"));
 
-    errorInput =  AppWindow.createTextInput(980, 200, 0,0, true);
-
+    errorInput =  AppWindow.createTextInput(980, 200, 0,0);
+    box.add(AppWindow.createScroll(980,200, errorInput));
 
     JButton button  = AppWindow.createButton("Compilar");
+    box.add(button);
     button.setActionCommand("open_compiler");
     button.addActionListener(this::actionPerformed);
 

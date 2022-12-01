@@ -1,5 +1,5 @@
 programa
-início
+inicio
 fim
 procedimento
 funcao
@@ -15,7 +15,7 @@ var
 inteiro
 booleano
 identificador
-número
+numero
 .
 ;
 ,

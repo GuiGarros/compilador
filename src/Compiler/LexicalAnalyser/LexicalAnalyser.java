@@ -27,7 +27,6 @@ public class LexicalAnalyser {
 
   private void treatText() {
     removeComment();
-    System.out.println(this.codeToAnalyse);
   }
 
   private void removeComment() {
@@ -53,7 +52,6 @@ public class LexicalAnalyser {
   }
 
   public String[] getNextToken() {
-    System.out.println(indexStopped);
     char character = codeToAnalyse.charAt(indexStopped);
     try {
         while(character == ' '){

@@ -29,7 +29,7 @@ public class Stack { //simbol table
   {
     for(int i = 0; i < stack.size(); i++)
     {
-      if(stack.get(i).lexema.equals(token) && !stack.get(i).type.equals("variável") && stack.get(i).level == level)
+      if(stack.get(i).lexema.equals(token) && stack.get(i).type.equals("variável") && stack.get(i).level == level)
       {
         return true;
       }
@@ -50,17 +50,21 @@ public class Stack { //simbol table
     return false;
   }
 
-  public boolean findFunction(String value)
+  public int findFunction(String value) //0 não nada, 1 achou o identificador, 2 é função e é tipo booleano ou inteiro
   {
     for(int i = 0; i < stack.size(); i++)
     {
-      if(stack.get(i).lexema.equals(value) && (stack.get(i).type.equals("funcaointeiro") || stack.get(i).type.equals("funcaobooleano")))
+      if(stack.get(i).lexema.equals(value) && !stack.get(i).type.equals("procedimento"))
       {
-        return true;
+        if((stack.get(i).type.equals("funcaointeiro") || stack.get(i).type.equals("funcaobooleano")))
+        {
+          return 2;
+        }
+        return 1;
       }
     }
 
-    return false;
+    return 0;
   }
   public boolean findIdentifier(String value)
   {

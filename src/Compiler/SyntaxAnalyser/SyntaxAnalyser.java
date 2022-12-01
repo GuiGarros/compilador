@@ -3,7 +3,7 @@ package Compiler.SyntaxAnalyser;
 import Compiler.LexicalAnalyser.LexicalAnalyser;
 
 import java.util.LinkedList;
-
+import java.util.*;
 import Services.SimbolTable;
 import Services.Stack;
 
@@ -249,7 +249,23 @@ public class SyntaxAnalyser {
         String[] token = analyser.getNextToken();
         LinkedList<String[]> expression = new LinkedList<String[]>();
         expression = analyser_expression(token, expression);
+
+        for(int i = 0; i < expression.size(); i++)
+        {
+            System.out.println(Arrays.toString(expression.get(i)));
+        }
+
         token = expression.getLast();
+
+        LinkedList<String> posExpression = new LinkedList<String>();
+        posExpression = posfixo(expression);
+
+        for(int i = 0; i < posExpression.size(); i++)
+        {
+            System.out.println(posExpression.get(i));
+        }
+
+        //geracodigoPosfixo;
 
         if (token[1].equals("sentao")) {
             token = analyser.getNextToken();
@@ -342,6 +358,7 @@ public class SyntaxAnalyser {
         String[] token = originalToken;
 
         expression = analyser_expression_simple(token, expression);
+
         token = expression.getLast();
 
 
@@ -375,6 +392,7 @@ public class SyntaxAnalyser {
         }
 
         expression = analyser_term(token, expression);
+
         token = expression.getLast();
 
         while (token[1].equals("smais") || token[1].equals("smenos") || token[1].equals("sou")) {
@@ -407,13 +425,26 @@ public class SyntaxAnalyser {
         String[] token = originalToken;
         String[] tipo;
         if (token[1].equals("sidentificador")) {
-            if (!Search_table(token[0], level)) {
+
+            int busca = simbolTableStack.findFunction(token[0]);
+
+            if (busca == 0) throw new Error("identificador não encontrado");
+            else if(busca == 1)
+            {
+                expression.addLast(token);
                 token = analyser.getNextToken();
                 expression.addLast(token);
             }
-            token = analyser.getNextToken();
-            expression.addLast(token);
+            else if(busca == 2)
+            {
+                analyser_call_function(token);
+                expression.addLast(token);
+                token = analyser.getNextToken();
+                expression.addLast(token);
+            }
+
             return expression;
+
         } else if (token[1].equals("snúmero")) {
             token = analyser.getNextToken();
             expression.addLast(token);
@@ -446,18 +477,19 @@ public class SyntaxAnalyser {
 
     public void analyser_call_procedure(String[] originalToken) {
         Search_declarationproc_table(originalToken[0]);
-        // int aux = rotuloProc(originalToken[0])
-        // gerar o codigo do call
     }
 
-    public void analyser_call_function(SimbolTable value) {
-        // te.token = getToken(file);
-        // te.expression += te.token.lexema + " ";
-        if (!Search_declarationfunc_table(value.lexema)) {
+    public void analyser_call_function(String[] originalToken) {
+
+        if (!Search_declarationfunc_table(originalToken[0])) {
             throw new Error("Função não declarada");
         }
-        //te.token = getToken(file);
-        // return te;
+        else
+        {
+            //geração de codigo
+        }
+
+
     }
 
     public void Insert_table(SimbolTable linha) {
@@ -490,7 +522,15 @@ public class SyntaxAnalyser {
         }
         return false;
     }
+    public boolean search_declartion_function(String[] value)
+    {
+        if(simbolTableStack.findIdentifier(value[0]))
+        {
+            return true;
+        }
 
+        return false;
+    }
     public boolean Search_declarationproc_table(String value) {
 
         if (simbolTableStack.findProcedure(value)) return true;
@@ -500,7 +540,7 @@ public class SyntaxAnalyser {
 
     public boolean Search_declarationfunc_table(String value) {
 
-        if (simbolTableStack.findFunction(value)) return true;
+        if (simbolTableStack.findFunction(value) == 2) return true;
 
         return false;
     }
@@ -511,7 +551,7 @@ public class SyntaxAnalyser {
             throw new Error("ausencia de identificador");
         }
 
-        if (simbolTableStack.findFunction(value)) {
+        if (simbolTableStack.findFunction(value) == 2) {
             //analyser_call_function();
             return true;
         }

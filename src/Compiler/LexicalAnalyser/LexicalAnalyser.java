@@ -95,7 +95,7 @@ public class LexicalAnalyser {
     }
 
     indexStopped = i;
-    String[] values = {word, searchReserved(word)};
+    String[] values = {word, "snúmero"};
 
     return values;
   }

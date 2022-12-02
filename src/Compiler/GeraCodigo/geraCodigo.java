@@ -41,27 +41,27 @@ public class geraCodigo {
         // Confirmar se vai fazer o alloc e o dalloc aqui
         // Tem que ver a estrutura que vai vim aqui para arrumar os ifs
         for (int i = 0; i < pilha.size(); i++){
-            if (pilha.get(i).equals("ldv")) { // LDV
+            if (pilha.get(i).equals("sidentificador")) { // LDV
                 codigo_gerado.add("    ");
                 codigo_gerado.add("LDV     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("ldc")) { // LDC
+            } else if (pilha.get(i).equals("snúmero")) { // LDC
                 codigo_gerado.add("    ");
                 codigo_gerado.add("LDC     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("+")) {
+            } else if (pilha.get(i).equals("smais")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("ADD     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("-")) {
+            } else if (pilha.get(i).equals("smenos")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("SUB     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("*")) {
+            } else if (pilha.get(i).equals("smult")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("MULT    ");
                 codigo_gerado.add("    ");

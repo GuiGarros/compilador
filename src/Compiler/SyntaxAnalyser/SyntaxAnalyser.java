@@ -250,20 +250,16 @@ public class SyntaxAnalyser {
         LinkedList<String[]> expression = new LinkedList<String[]>();
         expression = analyser_expression(token, expression);
 
-        for(int i = 0; i < expression.size(); i++)
-        {
-            System.out.println(Arrays.toString(expression.get(i)));
-        }
-
         token = expression.getLast();
 
         LinkedList<String> posExpression = new LinkedList<String>();
         posExpression = posfixo(expression);
-
+        System.out.println("\ninicio do if\n");
         for(int i = 0; i < posExpression.size(); i++)
         {
             System.out.println(posExpression.get(i));
         }
+        System.out.println("\nfim do if\n");
 
         //geracodigoPosfixo;
 
@@ -427,7 +423,6 @@ public class SyntaxAnalyser {
         if (token[1].equals("sidentificador")) {
 
             int busca = simbolTableStack.findFunction(token[0]);
-
             if (busca == 0) throw new Error("identificador não encontrado");
             else if(busca == 1)
             {
@@ -457,6 +452,7 @@ public class SyntaxAnalyser {
             token = analyser.getNextToken();
             expression.addLast(token);
             expression = analyser_expression(token, expression);
+            token = expression.getLast();
             if (token[1].equals("sfecha_parênteses")) {
                 token = analyser.getNextToken();
                 expression.addLast(token);
@@ -517,9 +513,9 @@ public class SyntaxAnalyser {
 
     public boolean Search_declarationvarfunc_table(String value, int level) {
 
-        if (simbolTableStack.findVariable(value, level)) {
-            if (simbolTableStack.findIdentifier(value)) return true;
-        }
+        if (simbolTableStack.findVariable(value, level)) return true;
+        else if (simbolTableStack.findIdentifier(value)) return true;
+
         return false;
     }
     public boolean search_declartion_function(String[] value)
@@ -572,12 +568,12 @@ public class SyntaxAnalyser {
                 pilha.addLast(auxToken);
             } else if (auxToken[1].equals("sfecha_parênteses")) {
                 int topo = (pilha.size() - 1);
-                while (!("(".equals(pilha.getLast()))) {
-                    saida.addLast(pilha.getLast()[1]);
-                    pilha.removeLast();
+                while (!(pilha.get(topo)[1].equals("sabre_parênteses"))) {
+                    saida.addLast(pilha.get(topo)[1]);
+                    pilha.remove(topo);
                     topo--;
                 }
-                pilha.removeLast();
+                pilha.remove(topo);
             } else {
                 if (pilha.size() == 0) {
                     pilha.addLast(auxToken);

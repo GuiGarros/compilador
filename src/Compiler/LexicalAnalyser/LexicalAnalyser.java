@@ -47,7 +47,7 @@ public class LexicalAnalyser {
       }
 
       if(commentFlag){
-        throw new Error("erro: comentário não foi encerrado");
+        throw new Error("Erro: Comentário não foi encerrado.");
       }
   }
 
@@ -71,7 +71,6 @@ public class LexicalAnalyser {
         } else if (character == ';' || character == ',' || character == '(' || character == ')' || character == '.') {
           return treatPontuation(indexStopped);
         } else {
-//          throw new Error("error: caracter inválido: " + character);
           String[] values = {Character.toString(character), "serror"};
           indexStopped++;
           return values;

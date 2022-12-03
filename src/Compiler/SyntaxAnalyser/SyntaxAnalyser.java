@@ -32,7 +32,7 @@ public class SyntaxAnalyser {
                             System.out.println("Fim do arquivo");
                             break;
                         } else {
-                            throw new Error("Error: Ausência de um '.' no final do programa ou dois ';' na declaração do programa.");
+                            throw new Error("Error: Ausência de um '.' no final do programa.");
                         }
                     } else {
                         throw new Error("Error: Ausência de um ';'.");
@@ -108,7 +108,7 @@ public class SyntaxAnalyser {
 
     public String[] AnalyseType(String[] originalToken) {
         if (!originalToken[1].equals("sinteiro") && !originalToken[1].equals("sbooleano")) {
-            throw new Error("Error: Ausência do tipo de variável.");
+            throw new Error("Error: Ausência de 'inteiro' ou 'booleano'.");
         } else {
             Insert_table(new SimbolTable(originalToken[0], "variavel", 0, null, null));
             String[] token = analyser.getNextToken();
@@ -134,8 +134,9 @@ public class SyntaxAnalyser {
             }
             token = analyser.getNextToken();
             return token;
+        } else {
+            throw new Error("Error: Ausência de 'inicio'.");
         }
-        return originalToken;
     }
 
     public String[] AnalyseSimpleCommand(String[] originalToken) {
@@ -193,13 +194,13 @@ public class SyntaxAnalyser {
                         throw new Error("Error: Ausência de ')' na declaração de uma leitura.");
                     }
                 } else {
-                    throw new Error("Variavel não declarada");
+                    throw new Error("Error: Variável não declarada.");
                 }
             } else {
-                throw new Error("sidentificador");
+                throw new Error("Error: Ausência de 'sidentificador'.");
             }
         } else {
-            throw new Error("sabre_parênteses");
+            throw new Error("Error: Ausência de '(' na declaração de uma leitura.");
         }
         return token;
     }
@@ -214,16 +215,16 @@ public class SyntaxAnalyser {
                     if (token[1].equals("sfecha_parênteses")) {
                         token = analyser.getNextToken();
                     } else {
-                        throw new Error("Erro: Ausência de ')' na declaração de uma escrita.");
+                        throw new Error("Error: Ausência de ')' na declaração de uma escrita.");
                     }
                 } else {
-                    throw new Error("Varivael ou função não declarada");
+                    throw new Error("Error: Variável ou função não declarada.");
                 }
             } else {
-                throw new Error("Erro: Ausência de um 'identificador' na declaração de uma escrita.");
+                throw new Error("Error: Ausência de um 'identificador' na declaração de uma escrita.");
             }
         } else {
-            throw new Error("Erro: Ausência de '(' na declaração de uma escrita.");
+            throw new Error("Error: Ausência de '(' na declaração de uma escrita.");
         }
         return token;
     }
@@ -304,10 +305,10 @@ public class SyntaxAnalyser {
                 if (token[1].equals("sponto_vírgula")) {
                     AnalyseBlock();
                 } else {
-                    throw new Error("Error: Ausência de ';' na declaração de  um procedimento.");
+                    throw new Error("Error: Ausência de ';' na declaração de um procedimento.");
                 }
             } else {
-                throw new Error("Dupla ocorrencia de função");
+                throw new Error("Error: Dupla ocorrência de procedimento");
             }
         } else {
             throw new Error("Error: Ausência de 'identificador' na declaração de um procedimento.");
@@ -341,7 +342,7 @@ public class SyntaxAnalyser {
                     throw new Error("Error: Ausência de ':' na declaração de uma função.");
                 }
             } else {
-                throw new Error("Dupla ocorrencia de função");
+                throw new Error("Error: Dupla ocorrencia de função");
             }
         } else {
             throw new Error("Error: Ausência de 'identificador' na declaração de uma função.");

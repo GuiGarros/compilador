@@ -1,4 +1,4 @@
-{Teste sem final de comentario ............
+{Teste sem final de comentario ............}
 
 programa test1;
 

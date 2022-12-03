@@ -1,8 +1,8 @@
   programa teste1;
-                                           var x, y: integer;
+                                           var x, y: inteiro;
 
                                             procedimento p;
-                                               var z: integer;
+                                               var z: booleano;
                                             inicio
                                                    z:= x; 
                                                    x:=x-1;

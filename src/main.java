@@ -13,9 +13,8 @@ public class main {
 
     public static void main(String[] args) {
         FileReader reader = new FileReader();
-        reader.setFilePath("src/Tests/sint2.txt");
+        reader.setFilePath("src/Tests/teste_9.txt");
         String program = reader.readProgram();
-
         LexicalAnalyser analyser = new LexicalAnalyser();
         analyser.setCodeReaded(program);
         analyser.AnalyseLexemes();

@@ -11,6 +11,7 @@ public class GeraCodigo {
     //4 8 4 4
     public LinkedList<String> codigo_gerado = new LinkedList<>();
     public LinkedList<String> qnt_variaveis_alocadas = new LinkedList<>();
+    private String filePath;
 
     public String formata_codigo(String valor, int tamanho){
         if (tamanho == 4) {
@@ -25,6 +26,11 @@ public class GeraCodigo {
         return valor;
     }
 
+    public void printExpression(LinkedList<String> codigo_gerado) {
+        for (int i = 0; i < codigo_gerado.size(); i++) System.out.print(" " + codigo_gerado.get(i));
+        System.out.println("\n");
+    }
+
     // Quando é passado os 4 parametros, ex: Gera("",START,"","")
     public void criaCodigo(String p1, String p2, String p3, String p4){
         p1 = formata_codigo(p1,4);
@@ -37,96 +43,95 @@ public class GeraCodigo {
         codigo_gerado.add(p4);
     }
 
-    public void criaCodigo(LinkedList<String> pilha) {
+    public void criaCodigo(LinkedList<String[]> pilha) {
+        //printExpression(pilha);
         for (int i = 0; i < pilha.size(); i++){
-            if (pilha.get(i).equals("sidentificador")) {
+            if (pilha.get(i)[1].equals("sidentificador")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("LDV     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("snúmero")) {
+            } else if (pilha.get(i)[1].equals("snúmero")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("LDC     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("smais")) {
+            } else if (pilha.get(i)[1].equals("smais")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("ADD     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("smenos")) {
+            } else if (pilha.get(i)[1].equals("smenos")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("SUB     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("smult")) {
+            } else if (pilha.get(i)[1].equals("smult")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("MULT    ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("sdiv")){
+            } else if (pilha.get(i)[1].equals("sdiv")){
                 codigo_gerado.add("    ");
                 codigo_gerado.add("DIVI    ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("se")) {
+            } else if (pilha.get(i)[1].equals("se")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("AND     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("sou")) {
+            } else if (pilha.get(i)[1].equals("sou")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("OR      ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("smaior")) {
+            } else if (pilha.get(i)[1].equals("smaior")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("CMA     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("smenor")) {
+            } else if (pilha.get(i)[1].equals("smenor")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("CME     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("smaiorig")) {
+            } else if (pilha.get(i)[1].equals("smaiorig")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("CMAQ    ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("smenorig")) {
+            } else if (pilha.get(i)[1].equals("smenorig")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("CMEQ    ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("sdif")) {
+            } else if (pilha.get(i)[1].equals("sdif")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("CDIF    ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("sig")) {
+            } else if (pilha.get(i)[1].equals("sig")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("CEQ     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("-u")) {
+            } else if (pilha.get(i)[1].equals("-u")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("INV     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("snao")) {
+            } else if (pilha.get(i)[1].equals("snao")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("NEG    ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("funcao")) { // CALL
-
-            } else if (pilha.get(i).equals("sverdadeiro")) {
+            } else if (pilha.get(i)[1].equals("sverdadeiro")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("LDC    ");
                 codigo_gerado.add("1   ");
                 codigo_gerado.add("    ");
-            } else if (pilha.get(i).equals("sfalso")) {
+            } else if (pilha.get(i)[1].equals("sfalso")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("LDC    ");
                 codigo_gerado.add("0   ");
@@ -159,15 +164,10 @@ public class GeraCodigo {
 
     }
 
-    public void formataCodigo_gerado(LinkedList<String> codigo_gerado) {
-    }
-
     public void geraArquivo() throws IOException {
         int count = 0;
         try {
-            File arquivo_asembly = new File("D:\\", "assembly.txt");
-            arquivo_asembly.createNewFile();
-            FileWriter escreve = new FileWriter("D:\\assembly.txt");
+            FileWriter escreve = new FileWriter("src/ArquivoGerado/assembly.txt");
             for (int i = 0; i < codigo_gerado.size(); i++) {
                 escreve.write(String.valueOf(codigo_gerado.get(i)));
                 count++;

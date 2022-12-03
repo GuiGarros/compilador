@@ -5,13 +5,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
 
-public class geraCodigo {
-
+public class GeraCodigo {
     //4___NULL____________
     //____ALLOC___4___4___
     //4 8 4 4
-    public LinkedList<String> codigo_gerado = new LinkedList<String>();
-    public LinkedList<String> qnt_variaveis_alocadas = new LinkedList<String>();
+    public LinkedList<String> codigo_gerado = new LinkedList<>();
+    public LinkedList<String> qnt_variaveis_alocadas = new LinkedList<>();
 
     public String formata_codigo(String valor, int tamanho){
         if (tamanho == 4) {
@@ -38,7 +37,7 @@ public class geraCodigo {
         codigo_gerado.add(p4);
     }
 
-    public void criaCodigo(LinkedList<String[]> pilha) {
+    public void criaCodigo(LinkedList<String> pilha) {
         for (int i = 0; i < pilha.size(); i++){
             if (pilha.get(i).equals("sidentificador")) {
                 codigo_gerado.add("    ");
@@ -136,7 +135,7 @@ public class geraCodigo {
         }
     }
 
-    public geraCodigo(String p1, String p2){
+    public void criaCodigo(String p1, String p2){
         // p1 = ALLOC ou DALLOC
         // p2 = número de variáveis
         // Falta colocar a posição de memória
@@ -145,6 +144,7 @@ public class geraCodigo {
             codigo_gerado.add("    ");
             codigo_gerado.add("ALLOC   ");
             codigo_gerado.add("    ");
+            codigo_gerado.add("    ");
             p2 = formata_codigo(p2, 4);
             codigo_gerado.add(p2);
         } else {
@@ -152,22 +152,33 @@ public class geraCodigo {
             codigo_gerado.add("    ");
             codigo_gerado.add("DALLOC  ");
             codigo_gerado.add("    ");
+            codigo_gerado.add("    ");
             p2 = formata_codigo(p2, 4);
             codigo_gerado.add(p2);
         }
 
     }
 
+    public void formataCodigo_gerado(LinkedList<String> codigo_gerado) {
+    }
 
     public void geraArquivo() throws IOException {
+        int count = 0;
         try {
             File arquivo_asembly = new File("D:\\", "assembly.txt");
             arquivo_asembly.createNewFile();
             FileWriter escreve = new FileWriter("D:\\assembly.txt");
-            escreve.write(String.valueOf(codigo_gerado));
+            for (int i = 0; i < codigo_gerado.size(); i++) {
+                escreve.write(String.valueOf(codigo_gerado.get(i)));
+                count++;
+                if (count == 4) {
+                    escreve.write("\r");
+                    count = 0;
+                }
+            }
             escreve.close();
         } catch (IOException e) {
-            System.out.println("Erro para criar ou escrever no txt criado.");
+            System.out.println("Erro para criar ou escrever no .txt criado.");
             e.printStackTrace();
         }
     }

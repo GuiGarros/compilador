@@ -56,7 +56,7 @@ public class Stack { //simbol table
     {
       if(stack.get(i).lexema.equals(value) && !stack.get(i).type.equals("procedimento"))
       {
-        if((stack.get(i).type.equals("funcaointeiro") || stack.get(i).type.equals("funcaobooleano")))
+        if((stack.get(i).type.equals("funcaointeiro") || stack.get(i).type.equals("funcaobooleano")) && !stack.get(i).type.equals("variável"))
         {
           return 2;
         }

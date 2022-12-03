@@ -165,19 +165,30 @@ public class SyntaxAnalyser {
 
     public String[] AnalyserProcedureAtrib(String[] originalToken) {
         String[] token = analyser.getNextToken();
+        LinkedList<String[]> expression = new LinkedList<String[]>();
+        expression.addLast(originalToken);
         if (token[1].equals("satribuição")) {
-            token = analyser_atrib(token);
+            token = analyser_atrib(token,expression);
         } else {
             analyser_call_procedure(token);
         }
         return token;
     }
 
-    public String[] analyser_atrib(String[] originalToken) {
+    public String[] analyser_atrib(String[] originalToken,LinkedList<String[]> expression) {
+        //LinkedList<String[]> expression = new LinkedList<String[]>();
         String[] token = analyser.getNextToken();
-        LinkedList<String[]> expression = new LinkedList<String[]>();
+        expression.addLast(originalToken);
+        //System.out.println("aqui ::: " + originalToken[0]);
         expression = analyser_expression(token, expression);
         token = expression.getLast();
+        LinkedList<String> posExpression = new LinkedList<String>();
+        System.out.println("expressão");
+        printExpression(expression);
+        posExpression = posfixo(expression);
+        System.out.println("inicio");
+        printExpression2(posExpression);
+        System.out.println("fim");
         return token;
     }
 
@@ -235,6 +246,10 @@ public class SyntaxAnalyser {
         expression = analyser_expression(token, expression);
         token = expression.getLast();
 
+        LinkedList<String> posExpression = new LinkedList<String>();
+        posExpression = posfixo(expression);
+       // printExpression2(posExpression);
+
 
         if (token[1].equals("sfaca")) {
             token = analyser.getNextToken();
@@ -255,12 +270,7 @@ public class SyntaxAnalyser {
 
         LinkedList<String> posExpression = new LinkedList<String>();
         posExpression = posfixo(expression);
-        System.out.println("\ninicio do if\n");
-        for(int i = 0; i < posExpression.size(); i++)
-        {
-            System.out.println(posExpression.get(i));
-        }
-        System.out.println("\nfim do if\n");
+       // printExpression2(posExpression);
 
         //geracodigoPosfixo;
 
@@ -367,7 +377,7 @@ public class SyntaxAnalyser {
                         token[1].equals("sdif") ||
                         token[1].equals("sig")) {
             token = analyser.getNextToken();
-            expression.addLast(token);
+            //expression.addLast(token);
             expression = analyser_expression_simple(token, expression);
             token = expression.getLast();
         }
@@ -386,16 +396,25 @@ public class SyntaxAnalyser {
             }
             token = analyser.getNextToken();
             expression.addLast(token);
+            expression = analyser_term(token, expression);
+            token = expression.getLast();
+        }
+        else
+        {
+            expression.addLast(token);
+            expression = analyser_term(token, expression);
+            token = expression.getLast();
         }
 
-        expression = analyser_term(token, expression);
 
-        token = expression.getLast();
+
+
 
         while (token[1].equals("smais") || token[1].equals("smenos") || token[1].equals("sou")) {
             token = analyser.getNextToken();
             expression.addLast(token);
             expression = analyser_term(token, expression);
+            //printExpression(expression);
             token = expression.getLast();
         }
 
@@ -404,6 +423,7 @@ public class SyntaxAnalyser {
 
     public LinkedList<String[]> analyser_term(String[] originalToken, LinkedList<String[]> expression) {
         String[] token = originalToken;
+        //printExpression(expression);
         expression = analyser_factor(token, expression);
         token = expression.getLast();
 
@@ -422,12 +442,11 @@ public class SyntaxAnalyser {
         String[] token = originalToken;
         String[] tipo;
         if (token[1].equals("sidentificador")) {
-
             int busca = simbolTableStack.findFunction(token[0]);
             if (busca == 0) throw new Error("identificador não encontrado");
             else if(busca == 1)
             {
-                expression.addLast(token);
+                //expression.addLast(token);
                 token = analyser.getNextToken();
                 expression.addLast(token);
             }
@@ -451,7 +470,7 @@ public class SyntaxAnalyser {
             expression = analyser_factor(token, expression);
         } else if (token[1].equals("sabre_parênteses")) {
             token = analyser.getNextToken();
-            expression.addLast(token);
+            //expression.addLast(token);
             expression = analyser_expression(token, expression);
             token = expression.getLast();
             if (token[1].equals("sfecha_parênteses")) {
@@ -560,6 +579,7 @@ public class SyntaxAnalyser {
         LinkedList<String[]> pilha = new LinkedList<String[]>();
         LinkedList<String> saida = new LinkedList<String>();
 
+
         for (int i = 0; i < expression.size(); i++) {
             String[] auxToken = expression.get(i);
 
@@ -582,7 +602,7 @@ public class SyntaxAnalyser {
                     int operador = 0, operador_pilha = 0;
                     int aux_topo_pilha = (pilha.size() - 1);
 
-                    while (operador_pilha >= operador && pilha.size() != 0) {
+                    do {
                         operador = operartionPriority(auxToken);
                         operador_pilha = operartionPriority(pilha.get(aux_topo_pilha));
                         if (operador_pilha >= operador) {
@@ -590,10 +610,12 @@ public class SyntaxAnalyser {
                             pilha.removeLast();
                             aux_topo_pilha--;
                         }
+
+                    }while (operador_pilha >= operador && pilha.size() != 0);
                         if (operador_pilha < operador || pilha.size() != 0) {
                             pilha.addLast(auxToken);
                         }
-                    }
+
                 }
             }
         }
@@ -625,6 +647,19 @@ public class SyntaxAnalyser {
             }
         }
         return -1;
+    }
+
+    public void printExpression(LinkedList<String[]> expression)
+    {
+        System.out.println("\n");
+        for ( int i = 0 ; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0] );
+        System.out.println("\n");
+    }
+    public void printExpression2(LinkedList<String> expression)
+    {
+        System.out.println("\n");
+        for ( int i = 0 ; i < expression.size(); i++) System.out.print(" " + expression.get(i));
+        System.out.println("\n");
     }
 }
 

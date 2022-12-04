@@ -53,9 +53,4 @@ public class FileReader {
     this.filePath = path;
   }
 
-  public String getFilePath() {
-    return this.filePath;
-  }
-
-
 }

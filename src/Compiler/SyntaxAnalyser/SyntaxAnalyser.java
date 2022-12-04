@@ -19,6 +19,8 @@ public class SyntaxAnalyser {
     public LinkedList<Integer> flagAtribuicaoTipoDireita = new LinkedList<>(); // 1 = inteiro / 2 = booleano
     public LinkedList<Integer> lista_alloc = new LinkedList<>();
     private GeraCodigo gera = new GeraCodigo();
+    public String filePath = "";
+
     public void setAnalyser(LexicalAnalyser analyser) {
         this.analyser = analyser;
     }
@@ -44,6 +46,7 @@ public class SyntaxAnalyser {
                             gera.criaCodigo("", "HLT", "", "");
                             //System.out.println("Fim do arquivo");
                             gera.geraArquivo();
+                            filePath = gera.filePath;
                             simbolTableStack.deletaLevel(level);
                             break;
                         } else {

@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 public class GeraCodigo {
+    public String filePath = "";
     //4___NULL____________
     //____ALLOC___4___4___
     //4 8 4 4
     public LinkedList<String> codigo_gerado = new LinkedList<>();
-
     public String formata_codigo(String valor, int tamanho) {
         if (tamanho == 4) {
             while (valor.length() != 4) {
@@ -175,7 +175,9 @@ public class GeraCodigo {
     public void geraArquivo() throws IOException {
         int count = 0;
         try {
-            FileWriter escreve = new FileWriter("src/ArquivoGerado/assembly.txt");
+            String fileName = "src/OutputFiles/assembly-" + Math.random() + ".obj";
+            FileWriter escreve = new FileWriter(fileName);
+            filePath=fileName;
             for (int i = 0; i < codigo_gerado.size(); i++) {
                 escreve.write(String.valueOf(codigo_gerado.get(i)));
                 count++;
@@ -186,7 +188,7 @@ public class GeraCodigo {
             }
             escreve.close();
         } catch (IOException e) {
-            System.out.println("Erro para criar ou escrever no .txt criado.");
+            System.out.println("Erro para criar ou escrever no .obj criado.");
             e.printStackTrace();
         }
     }

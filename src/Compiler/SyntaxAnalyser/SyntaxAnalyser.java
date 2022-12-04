@@ -213,8 +213,8 @@ public class SyntaxAnalyser {
         //printExpression(auxiliar);
         posExpression = posfixo(expression);
         gera.criaCodigo(posExpression, simbolTableStack, level);
-        System.out.println(auxiliar.getFirst()[1]);
-        gera.criaCodigo("", "STR", String.valueOf(simbolTableStack.getPosicaoMemoria(auxiliar.getFirst())), "");
+        //System.out.println(auxiliar.getFirst()[1]);
+        gera.criaCodigo("", "STR", String.valueOf(simbolTableStack.getPosicaoMemoriaVariavelFuncao(auxiliar.getFirst(),level)), "");
         //System.out.println("inicio");
         //printExpression2(posExpression);
         //System.out.println("fim");
@@ -227,8 +227,10 @@ public class SyntaxAnalyser {
         if (token[1].equals("sabre_parênteses")) {
             token = analyser.getNextToken();
             if (token[1].equals("sidentificador")) {
-                if (Search_declarationvar_table(token[0], level)) {
-                    gera.criaCodigo("", "STR", String.valueOf(simbolTableStack.getPosicaoMemoria(token)),"");
+                int busca = Search_declarationvar_table(token[0],level);
+                if (busca != -1) { // -1 Não declarada / 1 variável inteira / 2 variável booleana
+                    if (busca == 2) throw new Error("Error: Variável no 'leia' não pode ser booleana.");
+                    gera.criaCodigo("", "STR", String.valueOf(simbolTableStack.getPosicaoMemoria(token,level)),"");
                     token = analyser.getNextToken();
                     if (token[1].equals("sfecha_parênteses")) {
                         token = analyser.getNextToken();
@@ -252,12 +254,16 @@ public class SyntaxAnalyser {
         if (token[1].equals("sabre_parênteses")) {
             token = analyser.getNextToken();
             if (token[1].equals("sidentificador")) {
-                if (Search_declarationvarfunc_table(token[0], level) != -1) {
-                    if (Search_declarationvarfunc_table(token[0], level) == 1) { // É variável
-                        gera.criaCodigo("", "LDV", String.valueOf(simbolTableStack.getPosicaoMemoria(token)), "");
-                    } else { // É função
-                        gera.criaCodigo("", "CALL", String.valueOf(simbolTableStack.getPosicaoMemoria(token)), "");
-                        gera.criaCodigo("","LDV",String.valueOf(simbolTableStack.getPosicaoMemoria(token)),"");
+                if (Search_declarationvarfunc_table(token[0], level) != -1) { // -1 não declarada / 1 é variável / 2 é função
+                    if (Search_declarationvarfunc_table(token[0], level) == 1) {
+                        if (Search_declarationvarType(token[0],level)) { // True = Variável inteira / False = Variável booleana
+                            gera.criaCodigo("", "LDVa", String.valueOf(simbolTableStack.getPosicaoMemoria(token,level)), "");
+                        } else {
+                            throw new Error("Error: Variável no 'escreva' não pode ser booleana.");
+                        }
+                    } else {
+                        gera.criaCodigo("", "CALL", String.valueOf(simbolTableStack.getPosicaoMemoria(token,level)), "");
+                        gera.criaCodigo("","LDV",String.valueOf(simbolTableStack.getPosicaoMemoria(token,level)),"");
                     }
                     token = analyser.getNextToken();
                     if (token[1].equals("sfecha_parênteses")) {
@@ -398,7 +404,7 @@ public class SyntaxAnalyser {
         if (token[1].equals("sidentificador")) {
             //System.out.println(token[0]);
             if (!Search_declarationfunc_table(token[0])) {
-                Insert_table(new SimbolTable(token[0], "funcao", level + 1, rotulo, p));
+                Insert_table(new SimbolTable(token[0], "funcao", level, rotulo, p));
                 token = analyser.getNextToken();
                 if (token[1].equals("sdoispontos")) {
                     token = analyser.getNextToken();
@@ -549,14 +555,14 @@ public class SyntaxAnalyser {
 
     public void analyser_call_procedure(String[] originalToken) {
         Search_declarationproc_table(originalToken[0]);
-        gera.criaCodigo("", "CALL", String.valueOf(simbolTableStack.getPosicaoMemoria(originalToken)), "");
+        gera.criaCodigo("", "CALL", String.valueOf(simbolTableStack.getPosicaoMemoria(originalToken,level)), "");
     }
 
     public void analyser_call_function(String[] originalToken) {
         if (!Search_declarationfunc_table(originalToken[0])) {
-            throw new Error("Função não declarada");
+            throw new Error("Error: Função não declarada");
         } else {
-            gera.criaCodigo("", "CALL", String.valueOf( simbolTableStack.getPosicaoMemoriaFuncao(originalToken)), "");
+            gera.criaCodigo("", "CALL", String.valueOf( simbolTableStack.getPosicaoMemoria(originalToken,level)), "");
             gera.criaCodigo("", "LDV", String.valueOf(0), "");
         }
     }
@@ -574,14 +580,23 @@ public class SyntaxAnalyser {
         return true;
     }
 
-    public boolean Search_declarationvar_table(String value, int level) {
-        return simbolTableStack.findVariable(value, level);
+    public int Search_declarationvar_table(String value, int level) {
+         if(!simbolTableStack.findVariable(value, level)) return -1;
+        return simbolTableStack.findType(value, level);
     }
 
-    public Integer Search_declarationvarfunc_table(String value, int level) {
+    public int Search_declarationvarfunc_table(String value, int level) {
         if (simbolTableStack.findVariable(value, level)) return 1;
         else if (simbolTableStack.findIdentifier(value)) return 2;
         return -1;
+    }
+
+    public boolean Search_declarationvarType(String value, int level) {
+        if (simbolTableStack.findType(value,level) == 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean search_declartion_function(String[] value) {

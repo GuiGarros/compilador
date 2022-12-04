@@ -29,6 +29,22 @@ public class Stack { //simbol table
         return false;
     }
 
+    public int findType(String token, int level) {
+        for (int i = 0; i < stack.size(); i++) {
+            if (stack.get(i).lexema.equals(token) && stack.get(i).type.equals("variável") && stack.get(i).level <= level) {
+                for (int j = i; j >= 0; j--){
+                    if (stack.get(j).lexema.equals("inteiro")) {
+                        return 1;
+                    }
+                    if (stack.get(j).lexema.equals("booleano")){
+                        return 2;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
     public boolean findDuplicatedVariable(String token, int level) {
         for (int i = 0; i < stack.size(); i++) {
             if (stack.get(i).lexema.equals(token) && stack.get(i).type.equals("variável") && stack.get(i).level == level) {
@@ -80,55 +96,60 @@ public class Stack { //simbol table
 
     public int getPosicaoMemoriaVariavel(String[] value, int level) {
         for (int i = 0; i < stack.size(); i++) {
-            if (stack.get(i).lexema.equals(value[0]) && stack.get(i).level <= level) {
+            if (stack.get(i).lexema.equals(value[0]) && stack.get(i).level == level) {
                 return (stack.get(i).p_posicao - 1);
             }
         }
         return -1;
     }
 
-    public int getPosicaoMemoriaFuncao(String[] value) {
-        for (int i = 0; i < stack.size(); i++) {
-            if (stack.get(i).lexema.equals(value[0]) && (stack.get(i).type.equals("funcao"))) {
-                return stack.get(i).rot;
-            }
-        }
-        return -1;
-    }
+//    public int getPosicaoMemoriaFuncao(String[] value) {
+//        for (int i = 0; i < stack.size(); i++) {
+//            if (stack.get(i).lexema.equals(value[0]) && (stack.get(i).type.equals("funcao"))) {
+//                return stack.get(i).rot;
+//            }
+//        }
+//        return -1;
+//    }
 
-    public int getPosicaoMemoriaProcedimento(String[] value) {
-        for (int i = 0; i < stack.size(); i++) {
-            if (stack.get(i).lexema.equals(value[0]) && stack.get(i).type.equals("procedimento")) {
-                return stack.get(i).rot;
-            }
-        }
-        return -1;
-    }
+//    public int getPosicaoMemoriaProcedimento(String[] value) {
+//        for (int i = 0; i < stack.size(); i++) {
+//            if (stack.get(i).lexema.equals(value[0]) && stack.get(i).type.equals("procedimento")) {
+//                return stack.get(i).rot;
+//            }
+//        }
+//        return -1;
+//    }
 
-    public int getPosicaoMemoriaVariavelFuncao(String[] value) {
-        for (int i = 0; i < stack.size(); i++) {
-            if (stack.get(i).lexema.equals(value[0]) && (stack.get(i).type.equals("funcao"))) {
-                return 0;
-            } else {
-                return (stack.get(i).p_posicao - 1);
-            }
-        }
-        return -1;
-    }
-
-    public int getPosicaoMemoria(String[] value) {
+    public int getPosicaoMemoriaVariavelFuncao(String[] value, int level) {
         for (int i = 0; i < stack.size(); i++) {
             if (stack.get(i).lexema.equals(value[0]) && (stack.get(i).type.equals("funcao"))) {
                 return 0;
+            } else if (stack.get(i).lexema.equals(value[0]) && stack.get(i).type.equals("variável")) {
+                for(int j = level; j >= 0; j--) {
+                    if (stack.get(i).level == j) return (stack.get(i).p_posicao - 1);
+                }
+            }
+        }
+        return -1;
+    }
+
+    public int getPosicaoMemoria(String[] value, int level) {
+        for (int i = 0; i < stack.size(); i++) {
+            if (stack.get(i).lexema.equals(value[0]) && (stack.get(i).type.equals("funcao"))) {
+                return stack.get(i).rot;
             } else if (stack.get(i).lexema.equals(value[0]) && (stack.get(i).type.equals("procedimento"))) {
                 return stack.get(i).rot;
-            } else if (stack.get(i).lexema.equals(value[0]) && (stack.get(i).type.equals("variável"))) {
-                return (stack.get(i).p_posicao - 1);
+            } else if (stack.get(i).lexema.equals(value[0]) && stack.get(i).type.equals("variável")) {
+                for(int j = level; j >= 0; j--) {
+                    if (stack.get(i).level == j) return (stack.get(i).p_posicao - 1);
+                }
             }
         }
         return -1;
     }
     public void deletaLevel(int level) {
+        printa();
 //        System.out.println("Level: " + level);
 //        for (int i = stack.size() - 1; i > 0; i --) {
 //            if (stack.get(i).level == (level)) {
@@ -136,5 +157,11 @@ public class Stack { //simbol table
 //                stack.removeLast();
 //            }
 //        }
+    }
+
+    public void printa() {
+        for (int i = 0; i < stack.size(); i ++) {
+            //System.out.println(i + ":" + stack.get(i).lexema + "/" + stack.get(i).level);
+        }
     }
 }

@@ -53,7 +53,7 @@ public class GeraCodigo {
             if (pilha.get(i)[1].equals("sidentificador") && (value.findFunction(pilha.get(i)[0]) != 2 || value.findProcedure(pilha.get(i)[0]))) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("LDV     ");
-                codigo_gerado.add(formata_codigo(String.valueOf(value.getPosicaoMemoriaVariavel(pilha.get(i), level)), 4));
+                codigo_gerado.add(formata_codigo(String.valueOf(value.getPosicaoMemoria(pilha.get(i), level)), 4));
                 codigo_gerado.add("    ");
             } else if (pilha.get(i)[1].equals("snúmero")) {
                 codigo_gerado.add("    ");

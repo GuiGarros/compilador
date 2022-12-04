@@ -11,7 +11,7 @@ var a,b,s: inteiro;
      leia (c);
      leia (a);
      s:= soma;                  
-     escreva (a);
+     escreva (s);
   fim;
   procedimento loop;         
   var x: inteiro;

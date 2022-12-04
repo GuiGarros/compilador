@@ -276,11 +276,6 @@ public class VirtualMachine {
             default:
                 break;
         }
-//        System.out.println(instruction + " " + memAddress);
-//        System.out.println("LINE " + programCounter);
-//        System.out.println("STACK " + s);
-//        System.out.println(Arrays.toString(stack));
-//        System.out.println(" ");
     }
 
     int findAddress(String address){

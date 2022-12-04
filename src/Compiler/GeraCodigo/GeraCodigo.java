@@ -175,8 +175,9 @@ public class GeraCodigo {
     public void geraArquivo() throws IOException {
         int count = 0;
         try {
-            FileWriter escreve = new FileWriter("src/ArquivoGerado/assembly.obj");
-            filePath="src/ArquivoGerado/assembly.obj";
+            String fileName = "src/ArquivoGerado/assembly-" + Math.random() + ".obj";
+            FileWriter escreve = new FileWriter(fileName);
+            filePath=fileName;
             for (int i = 0; i < codigo_gerado.size(); i++) {
                 escreve.write(String.valueOf(codigo_gerado.get(i)));
                 count++;

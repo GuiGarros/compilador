@@ -70,7 +70,7 @@ public class MainWindow {
       syntaxAnalyser.AnalyzeSyntax();
       return true;
     } catch (IOException error){
-      System.out.println(error);
+      errorInput.setText(error.getMessage());
       return false;
     }
   }

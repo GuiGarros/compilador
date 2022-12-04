@@ -40,31 +40,35 @@ public class CompileWindow {
     String[] codeCols = {"Endereço", "Instrução", "Atributo 1","Atributo 2"};
     String[] memCols = {"Endereço", "Valor"};
     box = CompilerWindow.getBox();
-    box.add(CompilerWindow.createText("Código"));
 
+    JPanel codePanel = CompilerWindow.createPanel(990, 370);
+    codePanel.add(CompilerWindow.createText("Código"));
     codeTable = CompilerWindow.createTable(codeCols,300);
-    box.add(CompilerWindow.createScroll(980,350,codeTable));
+    codePanel.add(CompilerWindow.createScroll(980,350,codeTable));
+    box.add(codePanel);
 
-    leftPanel= CompilerWindow.createPanel(490, 350);
+    leftPanel= CompilerWindow.createPanel(490, 330);
     leftPanel.add(CompilerWindow.createText("Memória"));
     memTable = CompilerWindow.createTable(memCols,300);
     leftPanel.add(CompilerWindow.createScroll(480, 300, memTable));
     box.add(leftPanel);
 
-    rightPanel = CompilerWindow.createPanel(490, 350);
+    rightPanel = CompilerWindow.createPanel(490, 330);
     rightPanel.add(CompilerWindow.createText("Saída"));
     output = CompilerWindow.createTextInput(480,300,0,0);
     rightPanel.add(CompilerWindow.createScroll(480, 300, output));
     box.add(rightPanel);
 
+    JPanel buttonPannel = CompilerWindow.createPanel(990, 50);
     runButton = CompilerWindow.createButton("Executar");
     runButton.setActionCommand("run");
     stepButton = CompilerWindow.createButton("Proximo Passo");
     stepButton.setActionCommand("next_step");
     runButton.addActionListener(this::actionPerformed);
     stepButton.addActionListener(this::actionPerformed);
-    box.add(runButton);
-    box.add(stepButton);
+    buttonPannel.add(runButton);
+    buttonPannel.add(stepButton);
+    box.add(buttonPannel);
   }
 
   public void actionPerformed(ActionEvent e) {

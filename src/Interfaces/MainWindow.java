@@ -37,25 +37,31 @@ public class MainWindow {
   public void interfaceBuilder (){
     AppWindow.createText("Arquivo");
     box = AppWindow.getBox();
-    fileInput =  AppWindow.createTextInput(300, 20, 0,0);
-    box.add(fileInput);
+    JPanel topPanel = AppWindow.createPanel(990, 40);
+    fileInput =  AppWindow.createTextInput(500, 20, 0,0);
+    topPanel.add(fileInput);
     JButton chooserButton  = AppWindow.createButton("Abrir Arquivo");
-    box.add(chooserButton);
+    topPanel.add(chooserButton);
+    box.add(topPanel);
     chooserButton.setActionCommand("open_chooser");
     chooserButton.addActionListener(this::actionPerformed);
-    box.add(AppWindow.createText("Código"));
+
+    JPanel codePanel = AppWindow.createPanel(990, 430);
+    codePanel.add(AppWindow.createText("Código"));
     codeInput =  AppWindow.createTextInput(980, 400, 0,0);
-    box.add(AppWindow.createScroll(980,400,codeInput));
+    codePanel.add(AppWindow.createScroll(980,400,codeInput));
+    box.add(codePanel);
 
-    box.add(AppWindow.createText("Erros"));
-
+    JPanel errorPanel = AppWindow.createPanel(990, 300);
+    errorPanel.add(AppWindow.createText("Erros"));
     errorInput =  AppWindow.createTextInput(980, 200, 0,0);
-    box.add(AppWindow.createScroll(980,200, errorInput));
+    errorPanel.add(AppWindow.createScroll(980,200, errorInput));
 
     JButton button  = AppWindow.createButton("Compilar");
-    box.add(button);
+    errorPanel.add(button);
     button.setActionCommand("open_compiler");
     button.addActionListener(this::actionPerformed);
+    box.add(errorPanel);
 
     AppWindow.setWindowStatus(true);
   }

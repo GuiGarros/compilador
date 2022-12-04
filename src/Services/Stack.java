@@ -20,7 +20,7 @@ public class Stack { //simbol table
     return true;
   }
 
-  public boolean findVariable(String token,int level)
+  public boolean findVariable(String token)
   {
     for(int i = 0; i < stack.size(); i++)
     {
@@ -61,7 +61,7 @@ public class Stack { //simbol table
     {
       if(stack.get(i).lexema.equals(value) && !stack.get(i).type.equals("procedimento"))
       {
-        if((stack.get(i).type.equals("funcaointeiro") || stack.get(i).type.equals("funcaobooleano")) && !stack.get(i).type.equals("variável"))
+        if(stack.get(i).type.equals("funcao"))
         {
           return 2;
         }
@@ -108,22 +108,25 @@ public class Stack { //simbol table
   public int getPosicaoMemoriaFuncao(String[] value){
     for(int i = 0; i < stack.size(); i++)
     {
-      if(stack.get(i).lexema.equals(value[0]) && (stack.get(i).type.equals("funcaointeiro") || stack.get(i).type.equals("funcaobooleano")))
+      if(stack.get(i).lexema.equals(value[0]) && (stack.get(i).type.equals("funcao")))
       {
-        return stack.get(i).p_posicao;
+        return stack.get(i).rot;
       }
     }
     return -1;
   }
 
   public int getPosicaoMemoriaProcedimento(String[] value){
+    System.out.println(value[0]);
+    System.out.println(value[1]);
     for(int i = 0; i < stack.size(); i++)
     {
       if(stack.get(i).lexema.equals(value[0]) && stack.get(i).type.equals("procedimento"))
       {
-        return stack.get(i).p_posicao;
+        return stack.get(i).rot;
       }
     }
     return -1;
   }
+
 }

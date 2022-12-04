@@ -77,7 +77,7 @@ public class GeraCodigo {
                 codigo_gerado.add("    ");
             } else if (pilha.get(i)[1].equals("sdiv")) {
                 codigo_gerado.add("    ");
-                codigo_gerado.add("DIV     ");
+                codigo_gerado.add("DIVI   ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
             } else if (pilha.get(i)[1].equals("se")) {

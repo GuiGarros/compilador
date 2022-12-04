@@ -247,6 +247,7 @@ public class VirtualMachine {
                 break;
             case "HLT":
                 stopFlag = true;
+                JOptionPane.showMessageDialog(null, "Execução Finalizada!");
                 outputText = outputText + "\n" + "Fim da execução";
                 outputField.setText(outputText);
                 break;

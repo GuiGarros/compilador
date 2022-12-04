@@ -2,25 +2,14 @@ package Services;
 
 import java.util.LinkedList;
 
-public class Stack { //simbol table
+public class Stack { // Tabela de simbolos
     public LinkedList<SimbolTable> stack = new LinkedList<SimbolTable>();
-
-    public SimbolTable pop() {
-        return stack.removeFirst();
-    }
 
     public void push(SimbolTable value) {
         stack.addFirst(value);
     }
 
     public int flagAtribuicaoTipoEsquerda = 0; // 1 = inteiro / 2 = booleano
-
-    public boolean find(SimbolTable value) {
-        if (stack.indexOf(value) == -1) {
-            return false; //not exists
-        }
-        return true;
-    }
 
     public boolean findVariable(String token, int level) {
         for (int i = 0; i < stack.size(); i++) {
@@ -117,24 +106,6 @@ public class Stack { //simbol table
         return -1;
     }
 
-//    public int getPosicaoMemoriaFuncao(String[] value) {
-//        for (int i = 0; i < stack.size(); i++) {
-//            if (stack.get(i).lexema.equals(value[0]) && (stack.get(i).type.equals("funcao"))) {
-//                return stack.get(i).rot;
-//            }
-//        }
-//        return -1;
-//    }
-
-//    public int getPosicaoMemoriaProcedimento(String[] value) {
-//        for (int i = 0; i < stack.size(); i++) {
-//            if (stack.get(i).lexema.equals(value[0]) && stack.get(i).type.equals("procedimento")) {
-//                return stack.get(i).rot;
-//            }
-//        }
-//        return -1;
-//    }
-
     public int getPosicaoMemoriaVariavelFuncao(String[] value, int level) {
         flagAtribuicaoTipoEsquerda = 0;
         for (int i = 0; i < stack.size(); i++) {
@@ -165,20 +136,10 @@ public class Stack { //simbol table
         }
         return -1;
     }
-    public void deletaLevel(int level) {
-        printa();
-//        System.out.println("Level: " + level);
-//        for (int i = stack.size() - 1; i > 0; i --) {
-//            if (stack.get(i).level == (level)) {
-//                System.out.println(stack.get(i).lexema);
-//                stack.removeLast();
-//            }
-//        }
-    }
 
     public void printa() {
         for (int i = 0; i < stack.size(); i ++) {
-            //System.out.println(i + ":" + stack.get(i).lexema + "/" + stack.get(i).level);
+            System.out.println(i + ":" + stack.get(i).lexema + "/" + stack.get(i).level);
         }
     }
 }

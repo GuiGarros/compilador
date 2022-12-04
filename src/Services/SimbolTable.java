@@ -8,8 +8,7 @@ public class SimbolTable {
     public int rot;
     public int p_posicao;
 
-    public SimbolTable(String lexema, String type, int level, int rot, int p_posicao)
-    {
+    public SimbolTable(String lexema, String type, int level, int rot, int p_posicao) {
         this.lexema = lexema;
         this.type = type;
         this.level = level;

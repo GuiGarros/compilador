@@ -1,0 +1,18 @@
+programa exemplo5;
+ var n, k: inteiro;
+ f1, f2, f3: inteiro;
+ inicio
+ leia(n);
+ f1:=0;
+ f2:=1;
+ k:=1;
+ enquanto k<=n
+ faca inicio
+ f3:=f1+f2;
+f1:=f2; f2:=f3;
+k:=k+1
+ fim;
+ escreva (n);
+ escreva (f1)
+ fim.
+ fim

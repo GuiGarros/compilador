@@ -1,21 +1,15 @@
 package Compiler.GeraCodigo;
 
-import Compiler.LexicalAnalyser.LexicalAnalyser;
-import Compiler.SyntaxAnalyser.SyntaxAnalyser;
-import Services.SimbolTable;
 import Services.Stack;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
 
 public class GeraCodigo {
     public String filePath = "";
-    //4___NULL____________
-    //____ALLOC___4___4___
-    //4 8 4 4
     public LinkedList<String> codigo_gerado = new LinkedList<>();
+
     public String formata_codigo(String valor, int tamanho) {
         if (tamanho == 4) {
             while (valor.length() != 4) {
@@ -29,13 +23,6 @@ public class GeraCodigo {
         return valor;
     }
 
-    public void printExpression(LinkedList<String> codigo_gerado) {
-//        for (int i = 0; i < codigo_gerado.size(); i++) System.out.print(" " + codigo_gerado.get(i));
-//        System.out.println("\n");
-    }
-
-    private Stack simbolTableStack = new Stack();
-
     // Quando é passado os 4 parametros, ex: Gera("",START,"","")
     public void criaCodigo(String p1, String p2, String p3, String p4) {
         p1 = formata_codigo(p1, 4);
@@ -48,6 +35,7 @@ public class GeraCodigo {
         codigo_gerado.add(p4);
     }
 
+    // Quando é passado a expressão é o level
     public void criaCodigo(LinkedList<String[]> pilha, Stack value, int level) {
         for (int i = 0; i < pilha.size(); i++) {
             if (pilha.get(i)[1].equals("sidentificador") && (value.findFunction(pilha.get(i)[0]) != 2 || value.findProcedure(pilha.get(i)[0]))) {
@@ -149,11 +137,11 @@ public class GeraCodigo {
         }
     }
 
+    // Quando é passado um ALLOC ou DALLOC,
+    // p1 = ALLOC ou DALLOC
+    // p2 = posição na pilha
+    // p3 = quantidade que deve ser alocada
     public void criaCodigo(String p1, Integer p2, Integer p3) {
-        // p1 = ALLOC ou DALLOC
-        // p2 = posição na pilha
-        // p3 = quantidade que deve ser alocada
-        // Falta colocar a posição de memória
         String aux;
         if (p1 == "ALLOC") {
             codigo_gerado.add("    ");
@@ -177,7 +165,7 @@ public class GeraCodigo {
         try {
             String fileName = "src/OutputFiles/assembly-" + Math.random() + ".obj";
             FileWriter escreve = new FileWriter(fileName);
-            filePath=fileName;
+            filePath = fileName;
             for (int i = 0; i < codigo_gerado.size(); i++) {
                 escreve.write(String.valueOf(codigo_gerado.get(i)));
                 count++;

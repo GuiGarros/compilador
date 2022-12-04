@@ -2,6 +2,7 @@ package Interfaces;
 
 import Compiler.LexicalAnalyser.LexicalAnalyser;
 import Compiler.SyntaxAnalyser.SyntaxAnalyser;
+import Services.AdaptedError;
 import Services.FileReader;
 
 import javax.swing.*;
@@ -14,6 +15,7 @@ public class MainWindow {
     Window AppWindow = new Window();
     Container box = null;
 
+    AdaptedError errors = new AdaptedError();
     FileChooser FilePicker = new FileChooser();
     File selectedFile = null;
     JTextArea fileInput = null;
@@ -30,7 +32,6 @@ public class MainWindow {
 
 
     public MainWindow() {
-
         interfaceBuilder();
     }
 
@@ -48,13 +49,13 @@ public class MainWindow {
 
         JPanel codePanel = AppWindow.createPanel(990, 430);
         codePanel.add(AppWindow.createText("Código"));
-        codeInput = AppWindow.createTextInput(980, 400, 0, 0);
+        codeInput = AppWindow.createTextInput(980, 2000, 0, 0);
         codePanel.add(AppWindow.createScroll(980, 400, codeInput));
         box.add(codePanel);
 
         JPanel errorPanel = AppWindow.createPanel(990, 300);
         errorPanel.add(AppWindow.createText("Erros"));
-        errorInput = AppWindow.createTextInput(980, 200, 0, 0);
+        errorInput = AppWindow.createTextInput(980, 500, 0, 0);
         errorPanel.add(AppWindow.createScroll(980, 200, errorInput));
 
         JButton button = AppWindow.createButton("Compilar");
@@ -63,10 +64,15 @@ public class MainWindow {
         button.addActionListener(this::actionPerformed);
         box.add(errorPanel);
 
+        AdaptedError errors = new AdaptedError();
+        errors.setErrorInput(errorInput);
+
         AppWindow.setWindowStatus(true);
     }
 
     public boolean analyseCode() {
+        lexicalAnalyser = null;
+        syntaxAnalyser = null;
         lexicalAnalyser = new LexicalAnalyser();
         syntaxAnalyser = new SyntaxAnalyser();
         lexicalAnalyser.setCodeReaded(program);
@@ -96,8 +102,11 @@ public class MainWindow {
                 codeInput.setText(reader.spacedCode);
                 break;
             case "open_compiler":
+                errors.setErrors("");
                 if (analyseCode()) {
                     this.openCompilation();
+                } else {
+                    errorInput.setText(errors.getErrors());
                 }
                 break;
             default:

@@ -11,7 +11,7 @@ programa exemplo6;
         fim;
     inicio
         leia(x);
-        p;  (2)
+        p;
         escreva (y);
         escreva (x)
     fim.

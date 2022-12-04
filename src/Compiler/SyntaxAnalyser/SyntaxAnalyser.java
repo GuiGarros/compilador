@@ -43,6 +43,7 @@ public class SyntaxAnalyser {
                             gera.criaCodigo("", "HLT", "", "");
                             //System.out.println("Fim do arquivo");
                             gera.geraArquivo();
+                            simbolTableStack.deletaLevel(level);
                             break;
                         } else {
                             throw new Error("Error: Ausência de um '.' no final do programa.");
@@ -207,12 +208,13 @@ public class SyntaxAnalyser {
         token = expression.getLast();
         LinkedList<String[]> posExpression = new LinkedList<String[]>();
         //System.out.println("expressão");
-        printExpression(expression);
+        //printExpression(expression);
         auxiliar.add(expression.removeFirst());
-        printExpression(auxiliar);
+        //printExpression(auxiliar);
         posExpression = posfixo(expression);
-        gera.criaCodigo(posExpression, simbolTableStack);
-        gera.criaCodigo("", "STR", String.valueOf(simbolTableStack.getPosicaoMemoriaVariavel(auxiliar.getFirst())), "");
+        gera.criaCodigo(posExpression, simbolTableStack, level);
+        System.out.println(auxiliar.getFirst()[1]);
+        gera.criaCodigo("", "STR", String.valueOf(simbolTableStack.getPosicaoMemoria(auxiliar.getFirst())), "");
         //System.out.println("inicio");
         //printExpression2(posExpression);
         //System.out.println("fim");
@@ -226,7 +228,7 @@ public class SyntaxAnalyser {
             token = analyser.getNextToken();
             if (token[1].equals("sidentificador")) {
                 if (Search_declarationvar_table(token[0], level)) {
-                    gera.criaCodigo("", "STR", String.valueOf(simbolTableStack.getPosicaoMemoriaVariavel(token)),"");
+                    gera.criaCodigo("", "STR", String.valueOf(simbolTableStack.getPosicaoMemoria(token)),"");
                     token = analyser.getNextToken();
                     if (token[1].equals("sfecha_parênteses")) {
                         token = analyser.getNextToken();
@@ -252,10 +254,10 @@ public class SyntaxAnalyser {
             if (token[1].equals("sidentificador")) {
                 if (Search_declarationvarfunc_table(token[0], level) != -1) {
                     if (Search_declarationvarfunc_table(token[0], level) == 1) { // É variável
-                        gera.criaCodigo("", "LDV", String.valueOf(simbolTableStack.getPosicaoMemoriaVariavel(token)), "");
+                        gera.criaCodigo("", "LDV", String.valueOf(simbolTableStack.getPosicaoMemoria(token)), "");
                     } else { // É função
-                        gera.criaCodigo("", "CALL", String.valueOf(simbolTableStack.getPosicaoMemoriaFuncao(token)), "");
-                        gera.criaCodigo("","LDV",String.valueOf(simbolTableStack.getPosicaoMemoriaFuncao(token)),"");
+                        gera.criaCodigo("", "CALL", String.valueOf(simbolTableStack.getPosicaoMemoria(token)), "");
+                        gera.criaCodigo("","LDV",String.valueOf(simbolTableStack.getPosicaoMemoria(token)),"");
                     }
                     token = analyser.getNextToken();
                     if (token[1].equals("sfecha_parênteses")) {
@@ -287,7 +289,7 @@ public class SyntaxAnalyser {
         token = expression.getLast();
         LinkedList<String[]> posExpression = new LinkedList<String[]>();
         posExpression = posfixo(expression);
-        gera.criaCodigo(posExpression, simbolTableStack);
+        gera.criaCodigo(posExpression, simbolTableStack, level);
         // printExpression2(posExpression);
         if (token[1].equals("sfaca")) {
             auxrot2 = rotulo;
@@ -313,10 +315,10 @@ public class SyntaxAnalyser {
         token = expression.getLast();
         LinkedList<String[]> posExpression = new LinkedList<String[]>();
         posExpression = posfixo(expression);
-        gera.criaCodigo(posExpression, simbolTableStack);
+        //printExpression2(posExpression);
+        gera.criaCodigo(posExpression, simbolTableStack, level);
         gera.criaCodigo("", "JMPF", String.valueOf(auxrot1), "");
         auxrot2 = rotulo;
-        printExpression2(posExpression);
         if (token[1].equals("sentao")) {
             token = analyser.getNextToken();
             token = AnalyseSimpleCommand(token);
@@ -384,6 +386,7 @@ public class SyntaxAnalyser {
             p = p - lista_alloc.getLast();
             gera.criaCodigo("DALLOC",p, lista_alloc.removeLast());
         }
+        simbolTableStack.deletaLevel(level);
         gera.criaCodigo("", "RETURN", "", "");
         level--;
         return token;
@@ -429,6 +432,7 @@ public class SyntaxAnalyser {
             p = p - lista_alloc.getLast();
             gera.criaCodigo("DALLOC",p, lista_alloc.removeLast());
         }
+        simbolTableStack.deletaLevel(level);
         gera.criaCodigo("", "RETURN", "", "");
         level--;
         return token;
@@ -458,8 +462,8 @@ public class SyntaxAnalyser {
         if (token[1].equals("smais") || token[1].equals("smenos")) {
             if (token[1].equals("smenos")) {
                 token[0] = "-u";
-                System.out.println(token[0]);
-                System.out.println(token[1]);
+                //System.out.println(token[0]);
+                //System.out.println(token[1]);
                 expression.addLast(token);
             }
             token = analyser.getNextToken();
@@ -503,7 +507,7 @@ public class SyntaxAnalyser {
             int busca = simbolTableStack.findFunction(token[0]);
             if (busca == 0) throw new Error("identificador não encontrado");
             else if (busca == 1) {
-                //expression.addLast(token);
+                //expression.addLast(token);F
                 token = analyser.getNextToken();
                 expression.addLast(token);
             } else if (busca == 2) {
@@ -545,7 +549,7 @@ public class SyntaxAnalyser {
 
     public void analyser_call_procedure(String[] originalToken) {
         Search_declarationproc_table(originalToken[0]);
-        gera.criaCodigo("", "CALL", String.valueOf(simbolTableStack.getPosicaoMemoriaProcedimento(originalToken)), "");
+        gera.criaCodigo("", "CALL", String.valueOf(simbolTableStack.getPosicaoMemoria(originalToken)), "");
     }
 
     public void analyser_call_function(String[] originalToken) {
@@ -571,11 +575,11 @@ public class SyntaxAnalyser {
     }
 
     public boolean Search_declarationvar_table(String value, int level) {
-        return simbolTableStack.findVariable(value);
+        return simbolTableStack.findVariable(value, level);
     }
 
     public Integer Search_declarationvarfunc_table(String value, int level) {
-        if (simbolTableStack.findVariable(value)) return 1;
+        if (simbolTableStack.findVariable(value, level)) return 1;
         else if (simbolTableStack.findIdentifier(value)) return 2;
         return -1;
     }
@@ -598,7 +602,7 @@ public class SyntaxAnalyser {
     }
 
     public boolean Search_table(String value, int level) {
-        if (!simbolTableStack.findIdentifier(value) && !simbolTableStack.findVariable(value)) {
+        if (!simbolTableStack.findIdentifier(value) && !simbolTableStack.findVariable(value, level)) {
             throw new Error("ausencia de identificador");
         }
         if (simbolTableStack.findFunction(value) == 2) {
@@ -653,6 +657,7 @@ public class SyntaxAnalyser {
                 pilha.remove(i);
             }
         }
+//        printExpression2(saida);
         return saida;
     }
 
@@ -677,14 +682,14 @@ public class SyntaxAnalyser {
 
     public void printExpression(LinkedList<String[]> expression) {
 //        System.out.println("\n");
-        for (int i = 0; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0] + "(" + expression.get(i)[1] + ")");
-        System.out.println("\n");
+//        for (int i = 0; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0] + "(" + expression.get(i)[1] + ")");
+//        System.out.println("\n");
     }
 
     public void printExpression2(LinkedList<String[]> expression) {
 //        System.out.println("\n");
-        for (int i = 0; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0]);
-        System.out.println("\n");
+//        for (int i = 0; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0]);
+//        System.out.println("\n");
     }
 }
 

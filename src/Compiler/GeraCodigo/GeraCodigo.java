@@ -30,8 +30,8 @@ public class GeraCodigo {
     }
 
     public void printExpression(LinkedList<String> codigo_gerado) {
-        for (int i = 0; i < codigo_gerado.size(); i++) System.out.print(" " + codigo_gerado.get(i));
-        System.out.println("\n");
+//        for (int i = 0; i < codigo_gerado.size(); i++) System.out.print(" " + codigo_gerado.get(i));
+//        System.out.println("\n");
     }
 
     private Stack simbolTableStack = new Stack();
@@ -48,12 +48,12 @@ public class GeraCodigo {
         codigo_gerado.add(p4);
     }
 
-    public void criaCodigo(LinkedList<String[]> pilha, Stack value) {
+    public void criaCodigo(LinkedList<String[]> pilha, Stack value, int level) {
         for (int i = 0; i < pilha.size(); i++) {
             if (pilha.get(i)[1].equals("sidentificador") && (value.findFunction(pilha.get(i)[0]) != 2 || value.findProcedure(pilha.get(i)[0]))) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("LDV     ");
-                codigo_gerado.add(formata_codigo(String.valueOf(value.getPosicaoMemoriaVariavel(pilha.get(i))), 4));
+                codigo_gerado.add(formata_codigo(String.valueOf(value.getPosicaoMemoriaVariavel(pilha.get(i), level)), 4));
                 codigo_gerado.add("    ");
             } else if (pilha.get(i)[1].equals("snúmero")) {
                 codigo_gerado.add("    ");
@@ -139,6 +139,11 @@ public class GeraCodigo {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("LDC    ");
                 codigo_gerado.add("0   ");
+                codigo_gerado.add("    ");
+            } else if (pilha.get(i)[1].equals("satrib")) {
+                codigo_gerado.add("    ");
+                codigo_gerado.add("STR    ");
+                codigo_gerado.add(formata_codigo(String.valueOf(value.getPosicaoMemoriaVariavel(pilha.get(i), level)), 4));
                 codigo_gerado.add("    ");
             }
         }

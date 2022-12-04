@@ -1,28 +1,36 @@
 package VirtualMachine;
 
 import Services.FileReader;
+import Services.MyTableModel;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class VirtualMachine {
     ArrayList<String[]> instructions = new ArrayList<String[]>();
     ArrayList<String> lines = new ArrayList<String>();
-    String[] stack = new String[30];
+    String[] stack = null;
     int s = 1;
+    int step = 0;
     boolean stopFlag = false;
     int programCounter = 0;
-    int aaa = 8;
 
-    String rawProgram = "";
+    JTable codeTable = null;
+    JTable stackTable = null;
+    JTextArea outputField = null;
+    String outputText = "";
 
     public VirtualMachine(JTable codeTable, JTable stackTable, JTextArea output) {
+        this.stackTable = stackTable;
+        outputField = output;
+        this.codeTable= codeTable;
         FileReader reader = new FileReader();
         reader.setFilePath("src/VirtualMachine/test.txt");
         lines = reader.readFile();
         setCodeInstructions();
-        runProgram();
     }
 
     public void setCodeInstructions() {
@@ -34,19 +42,71 @@ public class VirtualMachine {
 
             String[] inst = { label, instruction, memAddress, allocSpace};
 
-            System.out.println(Arrays.toString(inst));
-
             instructions.add(inst);
+        }
+        setCodeTable();
+    }
+
+    void updateCycleTable(){
+        DefaultTableModel table = (DefaultTableModel) stackTable.getModel();
+        int count = table.getRowCount();
+        for(int i=count-1 ; i>=0 ; i-- ){
+            table.removeRow(i);
+        }
+        for(int i=0; i< stack.length;i++){
+            table.addRow(new Object[]{ i, stack[i]});
         }
     }
 
+    void setCodeTable(){
+        DefaultTableModel table = (DefaultTableModel) codeTable.getModel();
+        for(int i =0; i<instructions.size();i++){
+            table.addRow(instructions.get(i));
+        }
+    }
+
+    void resetProcess(){
+        DefaultTableModel table = (DefaultTableModel) stackTable.getModel();
+        int count = table.getRowCount();
+        for(int i=count-1 ; i>=0 ; i-- ){
+            table.removeRow(i);
+        }
+        programCounter = 0;
+        stopFlag=false;
+        outputText = "";
+        outputField.setText(outputText);
+        stack = new String[30];
+        s=0;
+    }
+
     public void runProgram(){
-        System.out.println("RUNNING");
+        resetProcess();
         for (programCounter = 0 ; programCounter < instructions.size(); programCounter++){
             if(stopFlag){
                 break;
             }
             runInstruction(instructions.get(programCounter));
+            updateCycleTable();
+        }
+    }
+
+    public void runStep(){
+        if(programCounter == 0 || stopFlag){
+            resetProcess();
+        }
+        if(stopFlag){
+            return;
+        }
+        runInstruction(instructions.get(programCounter));
+        updateCycleTable();
+        setSelectedInstruction();
+        programCounter++;
+    }
+
+    public void setSelectedInstruction(){
+        codeTable.setRowSelectionInterval(programCounter, programCounter);
+        if(s>=0){
+            stackTable.setRowSelectionInterval(s,s);
         }
     }
 
@@ -109,7 +169,6 @@ public class VirtualMachine {
                 Integer negResult = 1-Integer.parseInt(stack[s]);
                 stack[s] =  negResult.toString();
                 break;
-            
             case "CME":
                 if(Integer.parseInt(stack[s-1]) < Integer.parseInt(stack[s])){
                     stack[s-1] = "1";
@@ -118,7 +177,6 @@ public class VirtualMachine {
                 }
                 s--;
                 break;
-            
             case "CMA":
                 if(Integer.parseInt(stack[s-1]) > Integer.parseInt(stack[s])){
                     stack[s-1] = "1";
@@ -127,7 +185,6 @@ public class VirtualMachine {
                 }
                 s--;
                 break;
-            
             case "CEQ":
                 if(Integer.parseInt(stack[s-1]) == Integer.parseInt(stack[s])){
                     stack[s-1] = "1";
@@ -136,7 +193,6 @@ public class VirtualMachine {
                 }
                 s--;
                 break;
-            
             case "CDIF":
                 if(Integer.parseInt(stack[s-1]) != Integer.parseInt(stack[s])){
                     stack[s-1] = "1";
@@ -145,7 +201,6 @@ public class VirtualMachine {
                 }
                 s--;
                 break;
-            
             case "CMEQ":
                 if(Integer.parseInt(stack[s-1]) <= Integer.parseInt(stack[s])){
                     stack[s-1] = "1";
@@ -154,7 +209,6 @@ public class VirtualMachine {
                 }
                 s--;
                 break;
-            
             case "CMAQ":
                 if(Integer.parseInt(stack[s-1]) >= Integer.parseInt(stack[s])){
                     stack[s-1] = "1";
@@ -173,9 +227,12 @@ public class VirtualMachine {
                 s--;
                 break;
             case "RD":
+                String value = "";
+                while (value == ""){
+                    value = JOptionPane.showInputDialog("Valor de entrada:");
+                }
                 s++;
-                aaa++;
-                stack[s] = String.valueOf(aaa);
+                stack[s] = value;
                 break;
             case "NULL":
                 break;
@@ -184,7 +241,8 @@ public class VirtualMachine {
                 s--;
                 break;
             case "PRN":
-                System.out.println(stack[s]);
+                outputText = "\n" + stack[s];
+                outputField.setText(outputText);
                 s--;
                 break;
             case "START":
@@ -192,6 +250,8 @@ public class VirtualMachine {
                 break;
             case "HLT":
                 stopFlag = true;
+                outputText = outputText + "\n" + "Fim da execução";
+                outputField.setText(outputText);
                 break;
             case "ALLOC":
                 int length = Integer.parseInt(allocSpace);

@@ -1,5 +1,6 @@
 import Compiler.LexicalAnalyser.LexicalAnalyser;
 import Compiler.SyntaxAnalyser.SyntaxAnalyser;
+import Interfaces.MainWindow;
 import Services.FileReader;
 import Services.Stack;
 import VirtualMachine.VirtualMachine;
@@ -13,22 +14,6 @@ public class main {
     static Stack symbolsTable = new Stack();
 
     public static void main(String[] args) {
-//        FileReader reader = new FileReader();
-//        reader.setFilePath("src/Tests/sint19.txt");
-//        String program = reader.readProgram();
-//
-//        LexicalAnalyser analyser = new LexicalAnalyser();
-//        analyser.setCodeReaded(program);
-//        analyser.AnalyseLexemes();
-//
-//
-//
-//        System.out.println(symbolsTable.stack);
-//
-//        SyntaxAnalyser syntax = new SyntaxAnalyser();
-//
-//        syntax.setAnalyser(analyser);
-//        syntax.AnalyzeSyntax();
-        VirtualMachine machine = new VirtualMachine();
+        MainWindow window = new MainWindow();
     }
 }

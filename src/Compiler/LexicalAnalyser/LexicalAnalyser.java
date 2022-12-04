@@ -1,5 +1,6 @@
 package Compiler.LexicalAnalyser;
 
+import Services.AdaptedError;
 import Services.FileReader;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ public class LexicalAnalyser {
     ArrayList<String> reservedLexemes = new ArrayList<String>();
     public String codeToAnalyse = "";
     public int indexStopped = 0;
+    AdaptedError Errors = new AdaptedError();
 
 
     public LexicalAnalyser() {
@@ -49,7 +51,7 @@ public class LexicalAnalyser {
         }
 
         if (commentFlag) {
-            throw new Error("Erro: Comentário não foi encerrado.");
+            Errors.newError("Erro: Comentário não foi encerrado.");
         }
     }
 

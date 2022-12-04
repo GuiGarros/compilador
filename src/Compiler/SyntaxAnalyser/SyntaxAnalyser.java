@@ -6,19 +6,21 @@ import Compiler.LexicalAnalyser.LexicalAnalyser;
 import java.io.IOException;
 import java.util.LinkedList;
 
+import Services.AdaptedError;
 import Services.SimbolTable;
 import Services.Stack;
 
 public class SyntaxAnalyser {
-    private LexicalAnalyser analyser = null; // Analisador Lexico
-    private Stack simbolTableStack = new Stack(); // Tabela de simbolos
-    public int level = 0; // Auxiliar para verificar escopo
-    public int rotulo = 1; // Auxiliar para os jumps do código
-    public int p = 0; // Posição na pilha
-    public int contador_variaveis = 0;// Auxiliar para saber quantas variáveis tem no procedimento ou função
-    public LinkedList<Integer> flagAtribuicaoTipoDireita = new LinkedList<>(); // 1 = inteiro, 2 = booleano
-    public LinkedList<Integer> lista_alloc = new LinkedList<>(); // Lista das variáveis que foi dado alloc
-    private GeraCodigo gera = new GeraCodigo(); // Geração de código
+    AdaptedError Errors = new AdaptedError();
+    private LexicalAnalyser analyser = null;
+    private Stack simbolTableStack = new Stack();
+    public int level = 0;
+    public int rotulo = 1;
+    public int p = 0; // posição na pilha
+    public int contador_variaveis = 0;
+    public LinkedList<Integer> flagAtribuicaoTipoDireita = new LinkedList<>(); // 1 = inteiro / 2 = booleano
+    public LinkedList<Integer> lista_alloc = new LinkedList<>();
+    private GeraCodigo gera = new GeraCodigo();
     public String filePath = "";
 
     public void setAnalyser(LexicalAnalyser analyser) {
@@ -46,16 +48,16 @@ public class SyntaxAnalyser {
                             filePath = gera.filePath;
                             break;
                         } else {
-                            throw new Error("Error: Ausência de um '.' no final do programa.");
+                            Errors.newError("Error: Ausência de um '.' no final do programa.");
                         }
                     } else {
-                        throw new Error("Error: Ausência de um ';'.");
+                        Errors.newError("Error: Ausência de um ';'.");
                     }
                 } else {
-                    throw new Error("Error: Ausência de um 'identificador' para o programa.");
+                    Errors.newError("Error: Ausência de um 'identificador' para o programa.");
                 }
             } else {
-                throw new Error("Error: Ausência de 'programa' na inicialização.");
+                Errors.newError("Error: Ausência de 'programa' na inicialização.");
             }
         }
     }
@@ -82,11 +84,11 @@ public class SyntaxAnalyser {
                     if (token[1].equals("sponto_vírgula")) {
                         token = analyser.getNextToken();
                     } else {
-                        throw new Error("Error: Ausência de ';' no final da linha.");
+                        Errors.newError("Error: Ausência de ';' no final da linha.");
                     }
                 }
             } else {
-                throw new Error("Error: Ausência de um 'identificador' para a variável.");
+                Errors.newError("Error: Ausência de um 'identificador' para a variável.");
             }
             gera.criaCodigo("ALLOC", (p - contador_variaveis), contador_variaveis);
             lista_alloc.addLast(contador_variaveis);
@@ -109,14 +111,14 @@ public class SyntaxAnalyser {
                         if (token[1].equals("svírgula")) {
                             token = analyser.getNextToken();
                             if (token[1].equals("sdoispontos")) {
-                                throw new Error("Erro: Ausência de ':' na declaração da variável ou uma ',' a mais.");
+                                Errors.newError("Erro: Ausência de ':' na declaração da variável ou uma ',' a mais.");
                             }
                         }
                     } else {
-                        throw new Error("Erro: Ausência de ',' ou ':' na declaração das variáveis.");
+                        Errors.newError("Erro: Ausência de ',' ou ':' na declaração das variáveis.");
                     }
                 } else {
-                    throw new Error("Erro: Variável duplicada");
+                    Errors.newError("Erro: Variável duplicada");
                 }
             }
             if (token[1].equals("sdoispontos")) {
@@ -130,7 +132,8 @@ public class SyntaxAnalyser {
 
     public String[] AnalyseType(String[] originalToken) {
         if (!originalToken[1].equals("sinteiro") && !originalToken[1].equals("sbooleano")) {
-            throw new Error("Error: Ausência de 'inteiro' ou 'booleano'.");
+            Errors.newError("Error: Ausência de 'inteiro' ou 'booleano'.");
+            return null;
         } else {
             Insert_table(new SimbolTable(originalToken[0], "variavel", level, -1, p));
             String[] token = analyser.getNextToken();
@@ -151,13 +154,14 @@ public class SyntaxAnalyser {
                         break;
                     }
                 } else {
-                    throw new Error("Error: Ausência de ';' no final da linha.");
+                    Errors.newError("Error: Ausência de ';' no final da linha.");
                 }
             }
             token = analyser.getNextToken();
             return token;
         } else {
-            throw new Error("Error: Ausência de 'inicio'.");
+            Errors.newError("Error: Ausência de 'inicio'.");
+            return null;
         }
     }
 
@@ -215,7 +219,7 @@ public class SyntaxAnalyser {
             flagAtribuicaoTipoDireita.clear();
             gera.criaCodigo("", "STR", String.valueOf(aux_p), "");
         } else {
-            throw new Error("Error: Compatibilidade de tipos na expressão é inválida.");
+            Errors.newError("Error: Compatibilidade de tipos na expressão é inválida.");
         }
         return token;
     }
@@ -228,22 +232,22 @@ public class SyntaxAnalyser {
             if (token[1].equals("sidentificador")) {
                 int busca = Search_declarationvar_table(token[0], level);
                 if (busca != -1) { // -1 Não declarada / 1 variável inteira / 2 variável booleana
-                    if (busca == 2) throw new Error("Error: Variável no 'leia' não pode ser booleana.");
+                    if (busca == 2) Errors.newError("Error: Variável no 'leia' não pode ser booleana.");
                     gera.criaCodigo("", "STR", String.valueOf(simbolTableStack.getPosicaoMemoria(token, level)), "");
                     token = analyser.getNextToken();
                     if (token[1].equals("sfecha_parênteses")) {
                         token = analyser.getNextToken();
                     } else {
-                        throw new Error("Error: Ausência de ')' na declaração de uma leitura.");
+                        Errors.newError("Error: Ausência de ')' na declaração de uma leitura.");
                     }
                 } else {
-                    throw new Error("Error: Variável não declarada.");
+                    Errors.newError("Error: Variável não declarada.");
                 }
             } else {
-                throw new Error("Error: Ausência de 'sidentificador'.");
+                Errors.newError("Error: Ausência de 'sidentificador'.");
             }
         } else {
-            throw new Error("Error: Ausência de '(' na declaração de uma leitura.");
+            Errors.newError("Error: Ausência de '(' na declaração de uma leitura.");
         }
         return token;
     }
@@ -258,7 +262,7 @@ public class SyntaxAnalyser {
                         if (Search_declarationvarType(token[0], level)) { // True = Variável inteira / False = Variável booleana
                             gera.criaCodigo("", "LDV", String.valueOf(simbolTableStack.getPosicaoMemoria(token, level)), "");
                         } else {
-                            throw new Error("Error: Variável no 'escreva' não pode ser booleana.");
+                            Errors.newError("Error: Variável no 'escreva' não pode ser booleana.");
                         }
                     } else {
                         gera.criaCodigo("", "CALL", String.valueOf(simbolTableStack.getPosicaoMemoria(token, level)), "");
@@ -269,16 +273,16 @@ public class SyntaxAnalyser {
                         gera.criaCodigo("", "PRN", "", "");
                         token = analyser.getNextToken();
                     } else {
-                        throw new Error("Error: Ausência de ')' na declaração de uma escrita.");
+                        Errors.newError("Error: Ausência de ')' na declaração de uma escrita.");
                     }
                 } else {
-                    throw new Error("Error: Variável ou função não declarada.");
+                    Errors.newError("Error: Variável ou função não declarada.");
                 }
             } else {
-                throw new Error("Error: Ausência de um 'identificador' na declaração de uma escrita.");
+                Errors.newError("Error: Ausência de um 'identificador' na declaração de uma escrita.");
             }
         } else {
-            throw new Error("Error: Ausência de '(' na declaração de uma escrita.");
+            Errors.newError("Error: Ausência de '(' na declaração de uma escrita.");
         }
         return token;
     }
@@ -303,7 +307,7 @@ public class SyntaxAnalyser {
             gera.criaCodigo("", "JMP", String.valueOf(auxrot1), "");
             gera.criaCodigo(String.valueOf(auxrot2), "NULL", "", "");
         } else {
-            throw new Error("Error: Ausência de um 'faca' na declaração de um enquanto.");
+            Errors.newError("Error: Ausência de um 'faca' na declaração de um enquanto.");
         }
         return token;
     }
@@ -334,7 +338,7 @@ public class SyntaxAnalyser {
                 gera.criaCodigo(String.valueOf(auxrot1), "NULL", "", "");
             }
         } else {
-            throw new Error("Error: Ausência de 'entao' na declaração de uma operação condicional.");
+            Errors.newError("Error: Ausência de 'entao' na declaração de uma operação condicional.");
         }
         return token;
     }
@@ -357,7 +361,7 @@ public class SyntaxAnalyser {
             if (token[1].equals("sponto_vírgula")) {
                 token = analyser.getNextToken();
             } else {
-                throw new Error("Error: Ausência de ';' na declaração de um procedimento ou função.");
+                Errors.newError("Error: Ausência de ';' na declaração de um procedimento ou função.");
             }
         }
         if (flag == 1) gera.criaCodigo(String.valueOf(auxrot1), "NULL", "", "");
@@ -376,13 +380,13 @@ public class SyntaxAnalyser {
                 if (token[1].equals("sponto_vírgula")) {
                     AnalyseBlock();
                 } else {
-                    throw new Error("Error: Ausência de ';' na declaração de um procedimento.");
+                    Errors.newError("Error: Ausência de ';' na declaração de um procedimento.");
                 }
             } else {
-                throw new Error("Error: Dupla ocorrência de procedimento");
+                Errors.newError("Error: Dupla ocorrência de procedimento");
             }
         } else {
-            throw new Error("Error: Ausência de 'identificador' na declaração de um procedimento.");
+            Errors.newError("Error: Ausência de 'identificador' na declaração de um procedimento.");
         }
         if ((lista_alloc.size() - 1) != level) {
             p = p - lista_alloc.getLast();
@@ -415,16 +419,16 @@ public class SyntaxAnalyser {
                             AnalyseBlock();
                         }
                     } else {
-                        throw new Error("Error: Ausência de um tipo na declaração de uma função.");
+                        Errors.newError("Error: Ausência de um tipo na declaração de uma função.");
                     }
                 } else {
-                    throw new Error("Error: Ausência de ':' na declaração de uma função.");
+                    Errors.newError("Error: Ausência de ':' na declaração de uma função.");
                 }
             } else {
-                throw new Error("Error: Dupla ocorrencia de função");
+                Errors.newError("Error: Dupla ocorrencia de função");
             }
         } else {
-            throw new Error("Error: Ausência de 'identificador' na declaração de uma função.");
+            Errors.newError("Error: Ausência de 'identificador' na declaração de uma função.");
         }
         if ((lista_alloc.size() - 1) != level) {
             p = p - lista_alloc.getLast();
@@ -495,7 +499,7 @@ public class SyntaxAnalyser {
         if (token[1].equals("sidentificador")) {
             int busca = simbolTableStack.findFunction(token[0]);
             if (busca == 0)
-                throw new Error("identificador não encontrado"); // 0 não encontrou / 1 é variável / 2 é função
+                Errors.newError("identificador não encontrado"); // 0 não encontrou / 1 é variável / 2 é função
             else if (busca == 1) {
                 flagAtribuicaoTipoDireita.addLast(simbolTableStack.findType(token[0], level));
                 token = analyser.getNextToken();
@@ -524,14 +528,14 @@ public class SyntaxAnalyser {
                 expression.addLast(token);
                 return expression;
             } else {
-                throw new Error("Error: Ausência de ')'.");
+                Errors.newError("Error: Ausência de ')'.");
             }
         } else if (token[0].equals("verdadeiro") || token[0].equals("falso")) {
             token = analyser.getNextToken();
             expression.addLast(token);
             return expression;
         } else {
-            throw new Error("Error: Ausência de verdadeiro ou falso.");
+            Errors.newError("Error: Ausência de verdadeiro ou falso.");
         }
         return expression;
     }
@@ -543,7 +547,7 @@ public class SyntaxAnalyser {
 
     public void analyser_call_function(String[] originalToken) {
         if (!Search_declarationfunc_table(originalToken[0])) {
-            throw new Error("Error: Função não declarada");
+            Errors.newError("Error: Função não declarada");
         } else {
             gera.criaCodigo("", "CALL", String.valueOf(simbolTableStack.getPosicaoMemoria(originalToken, level)), "");
             gera.criaCodigo("", "LDV", String.valueOf(0), "");

@@ -14,7 +14,7 @@ public class Window {
     Container box = frame.getContentPane();
 
     public Window() {
-        frame.setBounds(0, 0, 1000, 800);
+        frame.setBounds(0, 0, 1050, 900);
         frame.setDefaultCloseOperation(WindowConstants.
                 DISPOSE_ON_CLOSE);
         box.setLayout(flow);

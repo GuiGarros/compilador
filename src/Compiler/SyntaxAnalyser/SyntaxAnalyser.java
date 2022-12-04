@@ -16,6 +16,7 @@ public class SyntaxAnalyser {
     public int rotulo = 1;
     public int p = 0; // posição na pilha
     public int contador_variaveis = 0;
+    public LinkedList<Integer> flagAtribuicaoTipoDireita = new LinkedList<>(); // 1 = inteiro / 2 = booleano
     public LinkedList<Integer> lista_alloc = new LinkedList<>();
     private GeraCodigo gera = new GeraCodigo();
     public void setAnalyser(LexicalAnalyser analyser) {
@@ -203,21 +204,26 @@ public class SyntaxAnalyser {
         LinkedList<String[]> auxiliar = new LinkedList<String[]>();
         String[] token = analyser.getNextToken();
         expression.addLast(originalToken);
-        //System.out.println("aqui ::: " + originalToken[0]);
+        //printExpression(expression);
         expression = analyser_expression(token, expression);
         token = expression.getLast();
         LinkedList<String[]> posExpression = new LinkedList<String[]>();
-        //System.out.println("expressão");
-        //printExpression(expression);
-        auxiliar.add(expression.removeFirst());
-        //printExpression(auxiliar);
+        auxiliar.add(expression.removeFirst()); // Removendo o primeiro token para colocar no STR
         posExpression = posfixo(expression);
         gera.criaCodigo(posExpression, simbolTableStack, level);
-        //System.out.println(auxiliar.getFirst()[1]);
-        gera.criaCodigo("", "STR", String.valueOf(simbolTableStack.getPosicaoMemoriaVariavelFuncao(auxiliar.getFirst(),level)), "");
-        //System.out.println("inicio");
-        //printExpression2(posExpression);
-        //System.out.println("fim");
+        int aux_p = simbolTableStack.getPosicaoMemoriaVariavelFuncao(auxiliar.getFirst(),level);
+        if (simbolTableStack.findType(auxiliar.getFirst()[0],level) != -1) {
+            simbolTableStack.flagAtribuicaoTipoEsquerda = simbolTableStack.findType(auxiliar.getFirst()[0],level);
+        }
+        printExpression(expression);
+//        System.out.println(simbolTableStack.flagAtribuicaoTipoEsquerda);
+//        System.out.println(flagAtribuicaoTipoDireita);
+        if (verificaValidaExpressão(simbolTableStack.flagAtribuicaoTipoEsquerda, flagAtribuicaoTipoDireita)) {
+            flagAtribuicaoTipoDireita.clear();
+            gera.criaCodigo("", "STR", String.valueOf(aux_p), "");
+        } else {
+            throw new Error("Error: Compatibilidade de tipos na expressão é inválida.");
+        }
         return token;
     }
 
@@ -257,7 +263,7 @@ public class SyntaxAnalyser {
                 if (Search_declarationvarfunc_table(token[0], level) != -1) { // -1 não declarada / 1 é variável / 2 é função
                     if (Search_declarationvarfunc_table(token[0], level) == 1) {
                         if (Search_declarationvarType(token[0],level)) { // True = Variável inteira / False = Variável booleana
-                            gera.criaCodigo("", "LDVa", String.valueOf(simbolTableStack.getPosicaoMemoria(token,level)), "");
+                            gera.criaCodigo("", "LDV", String.valueOf(simbolTableStack.getPosicaoMemoria(token,level)), "");
                         } else {
                             throw new Error("Error: Variável no 'escreva' não pode ser booleana.");
                         }
@@ -321,7 +327,6 @@ public class SyntaxAnalyser {
         token = expression.getLast();
         LinkedList<String[]> posExpression = new LinkedList<String[]>();
         posExpression = posfixo(expression);
-        //printExpression2(posExpression);
         gera.criaCodigo(posExpression, simbolTableStack, level);
         gera.criaCodigo("", "JMPF", String.valueOf(auxrot1), "");
         auxrot2 = rotulo;
@@ -468,8 +473,6 @@ public class SyntaxAnalyser {
         if (token[1].equals("smais") || token[1].equals("smenos")) {
             if (token[1].equals("smenos")) {
                 token[0] = "-u";
-                //System.out.println(token[0]);
-                //System.out.println(token[1]);
                 expression.addLast(token);
             }
             token = analyser.getNextToken();
@@ -507,18 +510,18 @@ public class SyntaxAnalyser {
 
     public LinkedList<String[]> analyser_factor(String[] originalToken, LinkedList<String[]> expression) {
         String[] token = originalToken;
-        String[] tipo;
         if (token[1].equals("sidentificador")) {
-            //System.out.println(token[0]);
             int busca = simbolTableStack.findFunction(token[0]);
-            if (busca == 0) throw new Error("identificador não encontrado");
+            if (busca == 0) throw new Error("identificador não encontrado"); // 0 não encontrou / 1 é variável / 2 é função
             else if (busca == 1) {
-                //expression.addLast(token);F
+                flagAtribuicaoTipoDireita.addLast(simbolTableStack.findType(token[0], level));
+                //expression.addLast(token);
                 token = analyser.getNextToken();
                 expression.addLast(token);
             } else if (busca == 2) {
+                flagAtribuicaoTipoDireita.addLast(simbolTableStack.findTypeFunction(token,level));
                 analyser_call_function(token);
-                expression.addLast(token);
+                //expression.addLast(token); // aqui possivel bug do soma duplicado
                 token = analyser.getNextToken();
                 expression.addLast(token);
             }
@@ -672,7 +675,6 @@ public class SyntaxAnalyser {
                 pilha.remove(i);
             }
         }
-//        printExpression2(saida);
         return saida;
     }
 
@@ -695,10 +697,17 @@ public class SyntaxAnalyser {
         return -1;
     }
 
+    public boolean verificaValidaExpressão(int flagAtribuicaoTipoEsquerda, LinkedList<Integer> flagAtribuicaoTipoDireita) {
+        for (int i = 0; i < flagAtribuicaoTipoDireita.size(); i++) {
+            if (flagAtribuicaoTipoEsquerda != flagAtribuicaoTipoDireita.get(i)) return false;
+        }
+        return true;
+    }
+
     public void printExpression(LinkedList<String[]> expression) {
 //        System.out.println("\n");
-//        for (int i = 0; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0] + "(" + expression.get(i)[1] + ")");
-//        System.out.println("\n");
+        for (int i = 0; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0] + "(" + expression.get(i)[1] + ")");
+        System.out.println("\n");
     }
 
     public void printExpression2(LinkedList<String[]> expression) {

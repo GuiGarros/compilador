@@ -10,15 +10,15 @@ import Services.SimbolTable;
 import Services.Stack;
 
 public class SyntaxAnalyser {
-    private LexicalAnalyser analyser = null;
-    private Stack simbolTableStack = new Stack();
-    public int level = 0;
-    public int rotulo = 1;
-    public int p = 0; // posição na pilha
-    public int contador_variaveis = 0;
-    public LinkedList<Integer> flagAtribuicaoTipoDireita = new LinkedList<>(); // 1 = inteiro / 2 = booleano
-    public LinkedList<Integer> lista_alloc = new LinkedList<>();
-    private GeraCodigo gera = new GeraCodigo();
+    private LexicalAnalyser analyser = null; // Analisador Lexico
+    private Stack simbolTableStack = new Stack(); // Tabela de simbolos
+    public int level = 0; // Auxiliar para verificar escopo
+    public int rotulo = 1; // Auxiliar para os jumps do código
+    public int p = 0; // Posição na pilha
+    public int contador_variaveis = 0;// Auxiliar para saber quantas variáveis tem no procedimento ou função
+    public LinkedList<Integer> flagAtribuicaoTipoDireita = new LinkedList<>(); // 1 = inteiro, 2 = booleano
+    public LinkedList<Integer> lista_alloc = new LinkedList<>(); // Lista das variáveis que foi dado alloc
+    private GeraCodigo gera = new GeraCodigo(); // Geração de código
     public String filePath = "";
 
     public void setAnalyser(LexicalAnalyser analyser) {

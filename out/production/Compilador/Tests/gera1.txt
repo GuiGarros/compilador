@@ -8,7 +8,7 @@ var a,b,s: inteiro;
      z: booleano;                    
   procedimento ler;
   inicio
-     leia (c);
+     leia (z);
      leia (a);
      s:= soma;                  
      escreva (s);

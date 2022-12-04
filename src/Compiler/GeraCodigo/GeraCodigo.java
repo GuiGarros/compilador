@@ -163,7 +163,7 @@ public class GeraCodigo {
     public void geraArquivo() throws IOException {
         int count = 0;
         try {
-            String fileName = "src/OutputFiles/assembly-" + Math.random() + ".obj";
+            String fileName = "src/OutputFiles/assembly.obj";
             FileWriter escreve = new FileWriter(fileName);
             filePath = fileName;
             for (int i = 0; i < codigo_gerado.size(); i++) {

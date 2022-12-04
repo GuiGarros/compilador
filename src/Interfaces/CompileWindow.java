@@ -58,7 +58,7 @@ public class CompileWindow {
     stepButton.addActionListener(this::actionPerformed);
     box.add(runButton);
     box.add(stepButton);
-    vm = new VirtualMachine(codeTable, memTable, output);
+    vm = new VirtualMachine("src/VirtualMachine/gera1.obj",codeTable, memTable, output);
   }
 
   public void actionPerformed(ActionEvent e) {

@@ -23,12 +23,12 @@ public class VirtualMachine {
     JTextArea outputField = null;
     String outputText = "";
 
-    public VirtualMachine(JTable codeTable, JTable stackTable, JTextArea output) {
+    public VirtualMachine(String filePath , JTable codeTable, JTable stackTable, JTextArea output) {
         this.stackTable = stackTable;
         outputField = output;
         this.codeTable= codeTable;
         FileReader reader = new FileReader();
-        reader.setFilePath("src/VirtualMachine/test.txt");
+        reader.setFilePath(filePath);
         lines = reader.readFile();
         setCodeInstructions();
     }

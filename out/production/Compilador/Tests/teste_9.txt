@@ -15,4 +15,4 @@
                                          p;  
                                          escreva (y);
                                          escreva (x)
-                                    fim.  
+                                    fim.

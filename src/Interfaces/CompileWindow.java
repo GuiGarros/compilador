@@ -29,7 +29,14 @@ public class CompileWindow {
 
 
   public CompileWindow(){
+    interfaceBuilder();
+  }
 
+  public void setVmFilePath(String filepath){
+    vm = new VirtualMachine(filepath,codeTable, memTable, output);
+  }
+
+  public void interfaceBuilder(){
     String[] codeCols = {"Endereço", "Instrução", "Atributo 1","Atributo 2"};
     String[] memCols = {"Endereço", "Valor"};
     box = CompilerWindow.getBox();
@@ -58,7 +65,6 @@ public class CompileWindow {
     stepButton.addActionListener(this::actionPerformed);
     box.add(runButton);
     box.add(stepButton);
-    vm = new VirtualMachine("src/VirtualMachine/gera1.obj",codeTable, memTable, output);
   }
 
   public void actionPerformed(ActionEvent e) {

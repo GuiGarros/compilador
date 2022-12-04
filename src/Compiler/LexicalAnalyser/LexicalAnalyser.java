@@ -27,7 +27,6 @@ public class LexicalAnalyser {
 
   private void treatText() {
     removeComment();
-    System.out.println(this.codeToAnalyse);
   }
 
   private void removeComment() {
@@ -48,12 +47,11 @@ public class LexicalAnalyser {
       }
 
       if(commentFlag){
-        throw new Error("erro: comentário não foi encerrado");
+        throw new Error("Erro: Comentário não foi encerrado.");
       }
   }
 
   public String[] getNextToken() {
-    System.out.println(indexStopped);
     char character = codeToAnalyse.charAt(indexStopped);
     try {
         while(character == ' '){
@@ -73,7 +71,6 @@ public class LexicalAnalyser {
         } else if (character == ';' || character == ',' || character == '(' || character == ')' || character == '.') {
           return treatPontuation(indexStopped);
         } else {
-//          throw new Error("error: caracter inválido: " + character);
           String[] values = {Character.toString(character), "serror"};
           indexStopped++;
           return values;
@@ -97,7 +94,7 @@ public class LexicalAnalyser {
     }
 
     indexStopped = i;
-    String[] values = {word, searchReserved(word)};
+    String[] values = {word, "snúmero"};
 
     return values;
   }

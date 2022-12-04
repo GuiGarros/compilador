@@ -13,6 +13,7 @@ public class FileReader {
     try {
       spacedCode = "";
       code = "";
+      System.out.println("ARQUIVO " + filePath);
 
       File myObj = new File(filePath);
       Scanner myReader = new Scanner(myObj);

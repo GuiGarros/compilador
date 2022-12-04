@@ -17,5 +17,4 @@ inicio
            i:= i+1
        fim; 
    escreva(valor)
- ate v = -1;
 fim.

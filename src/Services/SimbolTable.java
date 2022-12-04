@@ -3,19 +3,17 @@ package Services;
 public class SimbolTable {
 
     public String lexema;
-
-    public String label;
     public String type;
     public int level;
+    public int rot;
+    public int p_posicao;
 
-    public String line;
-
-    public SimbolTable(String lexema, String type,int level,String line,String label)
+    public SimbolTable(String lexema, String type, int level, int rot, int p_posicao)
     {
         this.lexema = lexema;
-        this.label = label;
         this.type = type;
         this.level = level;
-        this.line = line;
+        this.rot = rot;
+        this.p_posicao = p_posicao;
     }
 }

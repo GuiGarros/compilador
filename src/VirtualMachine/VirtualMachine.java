@@ -1,13 +1,10 @@
 package VirtualMachine;
 
 import Services.FileReader;
-import Services.MyTableModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class VirtualMachine {
     ArrayList<String[]> instructions = new ArrayList<String[]>();

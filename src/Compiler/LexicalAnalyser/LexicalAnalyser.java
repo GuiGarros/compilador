@@ -11,7 +11,7 @@ public class LexicalAnalyser {
     public String codeToAnalyse = "";
     public int indexStopped = 0;
     AdaptedError Errors = new AdaptedError();
-
+    public static int line = 0;
 
     public LexicalAnalyser() {
         FileReader reader = new FileReader();
@@ -22,6 +22,7 @@ public class LexicalAnalyser {
     }
 
     public void setCodeReaded(String codeToAnalyse) {
+        System.out.println(codeToAnalyse);
         this.codeToAnalyse = codeToAnalyse;
     }
 
@@ -58,7 +59,11 @@ public class LexicalAnalyser {
     public String[] getNextToken() {
         char character = codeToAnalyse.charAt(indexStopped);
         try {
-            while (character == ' ') {
+            while (character == ' ' || character == '\n' || character == '\t') {
+                if(character == '\n'){
+                    line++;
+                    Errors.setLine(line);
+                }
                 indexStopped++;
                 character = codeToAnalyse.charAt(indexStopped);
             }

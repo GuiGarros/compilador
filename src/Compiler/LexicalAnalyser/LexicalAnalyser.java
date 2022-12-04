@@ -14,6 +14,7 @@ public class LexicalAnalyser {
     public static int line = 0;
 
     public LexicalAnalyser() {
+        line = 0;
         FileReader reader = new FileReader();
         reader.setFilePath("src/Compiler/LexicalAnalyser/lexemas.txt");
         reservedLexemes = reader.readFile();

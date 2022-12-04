@@ -75,7 +75,7 @@ public class MainWindow {
         syntaxAnalyser = null;
         lexicalAnalyser = new LexicalAnalyser();
         syntaxAnalyser = new SyntaxAnalyser();
-        lexicalAnalyser.setCodeReaded(reader.spacedCode);
+        lexicalAnalyser.setCodeReaded(codeInput.getText());
         try {
             lexicalAnalyser.AnalyseLexemes();
             syntaxAnalyser.setAnalyser(lexicalAnalyser);

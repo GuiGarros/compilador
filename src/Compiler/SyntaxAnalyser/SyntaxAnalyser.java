@@ -5,7 +5,6 @@ import Compiler.LexicalAnalyser.LexicalAnalyser;
 
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.*;
 
 import Services.SimbolTable;
 import Services.Stack;
@@ -15,6 +14,9 @@ public class SyntaxAnalyser {
     private Stack simbolTableStack = new Stack();
     public int level = 0;
     public int rotulo = 1;
+    public int p = 0; // posição na pilha
+    public int contador_variaveis = 0;
+    public LinkedList<Integer> lista_alloc = new LinkedList<>();
     private GeraCodigo gera = new GeraCodigo();
     public void setAnalyser(LexicalAnalyser analyser) {
         this.analyser = analyser;
@@ -22,18 +24,22 @@ public class SyntaxAnalyser {
 
     public void AnalyzeSyntax() throws IOException {
         gera.criaCodigo("", "START", "", "");
+        gera.criaCodigo("","ALLOC", String.valueOf(p), "1");
+        lista_alloc.addLast(1); // posição de retorno de função
+        p = p + 1;
         while (true) {
             String[] token = analyser.getNextToken();
             if (token[1].equals("sprograma")) {
                 token = analyser.getNextToken();
                 if (token[1].equals("sidentificador")) {
                     token = analyser.getNextToken();
-                    Insert_table(new SimbolTable(token[0], "nomedeprograma", level, -1, "")); ///lexema // inicio de programa // tipo null // level 0// linha sei la
+                    Insert_table(new SimbolTable(token[0], "nomedeprograma", level, -1, p)); ///lexema // inicio de programa // tipo null // level 0// linha sei la
                     if (token[1].equals("sponto_vírgula")) {
                         token = AnalyseBlock();
                         if (token[1].equals("sponto")) {
                             //validar se acabou arquivo, se não erro
-                            //gera.criaCodigo("DALLOC", "1"); // retorna de função
+                            //System.out.println(lista_alloc);
+                            gera.criaCodigo("DALLOC", 0, lista_alloc.removeLast()); // retorna de função
                             gera.criaCodigo("", "HLT", "", "");
                             //System.out.println("Fim do arquivo");
                             gera.geraArquivo();
@@ -58,6 +64,12 @@ public class SyntaxAnalyser {
         token = AnalyseEtVariables(token);
         token = analyserSubRoutines(token);
         token = AnalyseCommand(token);
+
+        if (lista_alloc.size() > 1 && level == 0) {
+            p = p - lista_alloc.getLast();
+            gera.criaCodigo("DALLOC", p, lista_alloc.removeLast());
+        }
+        //System.out.println(lista_alloc + "a");
         return token;
     }
 
@@ -76,6 +88,10 @@ public class SyntaxAnalyser {
             } else {
                 throw new Error("Error: Ausência de um 'identificador' para a variável.");
             }
+            gera.criaCodigo("ALLOC", (p-contador_variaveis), contador_variaveis);
+            lista_alloc.addLast(contador_variaveis);
+            //System.out.println(lista_alloc);
+            contador_variaveis = 0;
             return token;
         }
         return originalToken;
@@ -85,8 +101,10 @@ public class SyntaxAnalyser {
         String[] token = originalToken;
         while (true) {
             if (token[1].equals("sidentificador")) {
-                if (!Search_duplicatadevar_table(new SimbolTable(token[0], "variável", level, -1, ""))) {
-                    Insert_table(new SimbolTable(token[0], "variável", level, -1, ""));
+                contador_variaveis++;
+                p++;
+                if (!Search_duplicatadevar_table(new SimbolTable(token[0], "variável", level, -1, p))) {
+                    Insert_table(new SimbolTable(token[0], "variável", level, -1, p));
                     token = analyser.getNextToken();
                     if (token[1].equals("svírgula") || token[1].equals("sdoispontos")) {
                         if (token[1].equals("svírgula")) {
@@ -115,7 +133,7 @@ public class SyntaxAnalyser {
         if (!originalToken[1].equals("sinteiro") && !originalToken[1].equals("sbooleano")) {
             throw new Error("Error: Ausência de 'inteiro' ou 'booleano'.");
         } else {
-            Insert_table(new SimbolTable(originalToken[0], "variavel", 0, -1, null));
+            Insert_table(new SimbolTable(originalToken[0], "variavel", 0, -1, p));
             String[] token = analyser.getNextToken();
             return token;
         }
@@ -193,8 +211,8 @@ public class SyntaxAnalyser {
         auxiliar.add(expression.removeFirst());
         printExpression(auxiliar);
         posExpression = posfixo(expression);
-        gera.criaCodigo(posExpression);
-        gera.criaCodigo("", "STR", auxiliar.getFirst()[0], "");
+        gera.criaCodigo(posExpression, simbolTableStack);
+        gera.criaCodigo("", "STR", String.valueOf(simbolTableStack.getPosicaoMemoriaVariavel(auxiliar.getFirst())), "");
         //System.out.println("inicio");
         //printExpression2(posExpression);
         //System.out.println("fim");
@@ -208,7 +226,7 @@ public class SyntaxAnalyser {
             token = analyser.getNextToken();
             if (token[1].equals("sidentificador")) {
                 if (Search_declarationvar_table(token[0], level)) {
-                    gera.criaCodigo("", "STR", String.valueOf(token[0]), "");
+                    gera.criaCodigo("", "STR", String.valueOf(simbolTableStack.getPosicaoMemoriaVariavel(token)),"");
                     token = analyser.getNextToken();
                     if (token[1].equals("sfecha_parênteses")) {
                         token = analyser.getNextToken();
@@ -234,10 +252,10 @@ public class SyntaxAnalyser {
             if (token[1].equals("sidentificador")) {
                 if (Search_declarationvarfunc_table(token[0], level) != -1) {
                     if (Search_declarationvarfunc_table(token[0], level) == 1) { // É variável
-                        gera.criaCodigo("", "LDV", String.valueOf(token[0]), "");
+                        gera.criaCodigo("", "LDV", String.valueOf(simbolTableStack.getPosicaoMemoriaVariavel(token)), "");
                     } else { // É função
-                        gera.criaCodigo("", "CALL", "L" + level, "");
-                        gera.criaCodigo("","LDV","","");
+                        gera.criaCodigo("", "CALL", "L" + String.valueOf(rotulo), "");
+                        gera.criaCodigo("","LDV",String.valueOf(simbolTableStack.getPosicaoMemoriaFuncao(token)),"");
                     }
                     token = analyser.getNextToken();
                     if (token[1].equals("sfecha_parênteses")) {
@@ -269,11 +287,11 @@ public class SyntaxAnalyser {
         token = expression.getLast();
         LinkedList<String[]> posExpression = new LinkedList<String[]>();
         posExpression = posfixo(expression);
-        gera.criaCodigo(posExpression);
+        gera.criaCodigo(posExpression, simbolTableStack);
         // printExpression2(posExpression);
         if (token[1].equals("sfaca")) {
             auxrot2 = rotulo;
-            auxrot2++;
+            rotulo++;
             gera.criaCodigo("", "JMPF", "L" + String.valueOf(rotulo), "");
             token = analyser.getNextToken();
             token = AnalyseSimpleCommand(token);
@@ -295,9 +313,9 @@ public class SyntaxAnalyser {
         token = expression.getLast();
         LinkedList<String[]> posExpression = new LinkedList<String[]>();
         posExpression = posfixo(expression);
-        gera.criaCodigo(posExpression);
+        gera.criaCodigo(posExpression, simbolTableStack);
         gera.criaCodigo("", "JMPF", "L" + String.valueOf(auxrot1), "");
-        auxrot2 = level;
+        auxrot2 = rotulo;
         // printExpression2(posExpression);
         // geracodigoPosfixo;
         if (token[1].equals("sentao")) {
@@ -348,7 +366,7 @@ public class SyntaxAnalyser {
         level++;
         if (token[1].equals("sidentificador")) {
             if (!Search_declarationproc_table(token[0])) {
-                Insert_table(new SimbolTable(token[0], "procedimento", level, rotulo, null));
+                Insert_table(new SimbolTable(token[0], "procedimento", level, rotulo, p));
                 gera.criaCodigo("L" + String.valueOf(rotulo), "NULL", "", "");
                 rotulo++;
                 token = analyser.getNextToken();
@@ -363,6 +381,10 @@ public class SyntaxAnalyser {
         } else {
             throw new Error("Error: Ausência de 'identificador' na declaração de um procedimento.");
         }
+        if ((lista_alloc.size() -1) != level) {
+            p = p - lista_alloc.getLast();
+            gera.criaCodigo("DALLOC",p, lista_alloc.removeLast());
+        }
         gera.criaCodigo("", "RETURN", "", "");
         level--;
         return token;
@@ -372,15 +394,18 @@ public class SyntaxAnalyser {
         String[] token = analyser.getNextToken();
         level++;
         if (token[1].equals("sidentificador")) {
+            System.out.println(token[0]);
             if (!Search_declarationfunc_table(token[0])) {
+                Insert_table(new SimbolTable(token[0], "funcao", level + 1, rotulo, p));
                 token = analyser.getNextToken();
                 if (token[1].equals("sdoispontos")) {
                     token = analyser.getNextToken();
                     if (token[1].equals("sinteiro") || token[1].equals("sbooleano")) {
                         if (token[1].equals("sinteiro")) {
-                            Insert_table(new SimbolTable(token[0], "funcaointeiro", level + 1, rotulo, null));
+                            System.out.println(token[0]);
+                            Insert_table(new SimbolTable(token[0], "funcaointeiro", level, rotulo, p));
                         } else {
-                            Insert_table(new SimbolTable(token[0], "funcaobooleano", level + 1, rotulo, null));
+                            Insert_table(new SimbolTable(token[0], "funcaobooleano", level, rotulo, p));
                         }
                         gera.criaCodigo("L" + String.valueOf(rotulo), "NULL", "", "");
                         rotulo++;
@@ -399,6 +424,11 @@ public class SyntaxAnalyser {
             }
         } else {
             throw new Error("Error: Ausência de 'identificador' na declaração de uma função.");
+        }
+        //System.out.println(lista_alloc);
+        if ((lista_alloc.size() -1) != level) {
+            p = p - lista_alloc.getLast();
+            gera.criaCodigo("DALLOC",p, lista_alloc.removeLast());
         }
         gera.criaCodigo("", "RETURN", "", "");
         level--;
@@ -469,6 +499,7 @@ public class SyntaxAnalyser {
         String[] token = originalToken;
         String[] tipo;
         if (token[1].equals("sidentificador")) {
+            System.out.println(token[0]);
             int busca = simbolTableStack.findFunction(token[0]);
             if (busca == 0) throw new Error("identificador não encontrado");
             else if (busca == 1) {
@@ -522,7 +553,7 @@ public class SyntaxAnalyser {
             throw new Error("Função não declarada");
         } else {
             gera.criaCodigo("", "CALL", "L" + String.valueOf(rotulo), "");
-            gera.criaCodigo("", "LDV", String.valueOf(0), "");
+            gera.criaCodigo("", "LDVa", String.valueOf(0), "");
         }
     }
 
@@ -531,7 +562,7 @@ public class SyntaxAnalyser {
     }
 
     public boolean Search_duplicatadevar_table(SimbolTable value) {///1
-        if (!simbolTableStack.findVariable(value.lexema, value.level)) {
+        if (!simbolTableStack.findDuplicatedVariable(value.lexema, value.level)) {
             if (!simbolTableStack.getIdentificador(value)) {
                 return false;
             }
@@ -645,9 +676,9 @@ public class SyntaxAnalyser {
     }
 
     public void printExpression(LinkedList<String[]> expression) {
-        System.out.println("\n");
-        for (int i = 0; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0]);
-        System.out.println("\n");
+//        System.out.println("\n");
+//        for (int i = 0; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0]);
+//        System.out.println("\n");
     }
 
     public void printExpression2(LinkedList<String> expression) {

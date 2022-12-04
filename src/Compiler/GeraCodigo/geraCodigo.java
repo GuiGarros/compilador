@@ -1,5 +1,10 @@
 package Compiler.GeraCodigo;
 
+import Compiler.LexicalAnalyser.LexicalAnalyser;
+import Compiler.SyntaxAnalyser.SyntaxAnalyser;
+import Services.SimbolTable;
+import Services.Stack;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,9 +15,6 @@ public class GeraCodigo {
     //____ALLOC___4___4___
     //4 8 4 4
     public LinkedList<String> codigo_gerado = new LinkedList<>();
-    public LinkedList<String> qnt_variaveis_alocadas = new LinkedList<>();
-    private String filePath;
-
     public String formata_codigo(String valor, int tamanho){
         if (tamanho == 4) {
             while (valor.length() != 4){
@@ -31,6 +33,8 @@ public class GeraCodigo {
         System.out.println("\n");
     }
 
+    private Stack simbolTableStack = new Stack();
+
     // Quando é passado os 4 parametros, ex: Gera("",START,"","")
     public void criaCodigo(String p1, String p2, String p3, String p4){
         p1 = formata_codigo(p1,4);
@@ -43,13 +47,12 @@ public class GeraCodigo {
         codigo_gerado.add(p4);
     }
 
-    public void criaCodigo(LinkedList<String[]> pilha) {
-        //printExpression(pilha);
+    public void criaCodigo(LinkedList<String[]> pilha, Stack value) {
         for (int i = 0; i < pilha.size(); i++){
             if (pilha.get(i)[1].equals("sidentificador")) {
                 codigo_gerado.add("    ");
                 codigo_gerado.add("LDV     ");
-                codigo_gerado.add("    ");
+                codigo_gerado.add(formata_codigo(String.valueOf(value.getPosicaoMemoriaVariavel(pilha.get(i))), 4));
                 codigo_gerado.add("    ");
             } else if (pilha.get(i)[1].equals("snúmero")) {
                 codigo_gerado.add("    ");
@@ -73,7 +76,7 @@ public class GeraCodigo {
                 codigo_gerado.add("    ");
             } else if (pilha.get(i)[1].equals("sdiv")){
                 codigo_gerado.add("    ");
-                codigo_gerado.add("DIVI    ");
+                codigo_gerado.add("DIV     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
             } else if (pilha.get(i)[1].equals("se")) {
@@ -140,28 +143,27 @@ public class GeraCodigo {
         }
     }
 
-    public void criaCodigo(String p1, String p2){
+    public void criaCodigo(String p1, Integer p2, Integer p3){
         // p1 = ALLOC ou DALLOC
-        // p2 = número de variáveis
+        // p2 = posição na pilha
+        // p3 = quantidade que deve ser alocada
         // Falta colocar a posição de memória
+        String aux;
         if(p1 == "ALLOC") {
-            qnt_variaveis_alocadas.addLast(p2);
             codigo_gerado.add("    ");
             codigo_gerado.add("ALLOC   ");
-            codigo_gerado.add("    ");
-            codigo_gerado.add("    ");
-            p2 = formata_codigo(p2, 4);
-            codigo_gerado.add(p2);
+            aux = formata_codigo(String.valueOf(p2), 4);
+            codigo_gerado.add(aux);
+            aux = formata_codigo(String.valueOf(p3), 4);
+            codigo_gerado.add(aux);
         } else {
-            qnt_variaveis_alocadas.removeLast();
             codigo_gerado.add("    ");
             codigo_gerado.add("DALLOC  ");
-            codigo_gerado.add("    ");
-            codigo_gerado.add("    ");
-            p2 = formata_codigo(p2, 4);
-            codigo_gerado.add(p2);
+            aux = formata_codigo(String.valueOf(p2), 4);
+            codigo_gerado.add(aux);
+            aux = formata_codigo(String.valueOf(p3), 4);
+            codigo_gerado.add(aux);
         }
-
     }
 
     public void geraArquivo() throws IOException {

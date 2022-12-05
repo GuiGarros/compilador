@@ -31,6 +31,8 @@ public class VirtualMachine {
     }
 
     public void setCodeInstructions() {
+        instructions=null;
+        instructions = new ArrayList<String[]>();
         for (String line : lines) {
             String label =  line.substring(0,4).replaceAll(" ", "");
             String instruction =  line.substring(4,12).replaceAll(" ", "");
@@ -57,6 +59,10 @@ public class VirtualMachine {
 
     void setCodeTable(){
         DefaultTableModel table = (DefaultTableModel) codeTable.getModel();
+        int count = table.getRowCount();
+        for(int i=count-1 ; i>=0 ; i-- ){
+            table.removeRow(i);
+        }
         for(int i =0; i<instructions.size();i++){
             table.addRow(instructions.get(i));
         }

@@ -58,6 +58,7 @@ public class VirtualMachine {
     }
 
     void setCodeTable(){
+        resetProcess();
         DefaultTableModel table = (DefaultTableModel) codeTable.getModel();
         int count = table.getRowCount();
         for(int i=count-1 ; i>=0 ; i-- ){
@@ -78,7 +79,7 @@ public class VirtualMachine {
         stopFlag=false;
         outputText = "";
         outputField.setText(outputText);
-        stack = new String[30];
+        stack = new String[50];
         s=0;
     }
 

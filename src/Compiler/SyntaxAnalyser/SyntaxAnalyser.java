@@ -167,7 +167,6 @@ public class SyntaxAnalyser {
             token = analyser.getNextToken();
             return token;
         } else {
-            System.out.println(":::::"+inicios);
             Errors.newError("Error: Ausência de 'inicio'.");
             return null;
         }
@@ -225,9 +224,6 @@ public class SyntaxAnalyser {
             simbolTableStack.flagAtribuicaoTipoEsquerda = simbolTableStack.findType(auxiliar.getFirst()[0], level);
         }
 
-        printExpression(expression);
-        System.out.println(simbolTableStack.flagAtribuicaoTipoEsquerda);
-        System.out.println(flagAtribuicaoTipoDireita);
 
         if (verificaValidaExpressão(simbolTableStack.flagAtribuicaoTipoEsquerda, flagAtribuicaoTipoDireita)) {
             gera.criaCodigo("", "STR", String.valueOf(aux_p), "");
@@ -684,10 +680,10 @@ public class SyntaxAnalyser {
         return true;
     }
 
-    public void printExpression(LinkedList<String[]> expression) {
-        for (int i = 0; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0] + "(" + expression.get(i)[1] + ")");
-        System.out.println("\n");
-    }
+//    public void printExpression(LinkedList<String[]> expression) {
+//        for (int i = 0; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0] + "(" + expression.get(i)[1] + ")");
+//        System.out.println("\n");
+//    }
 
 //    public void printExpression2(LinkedList<String[]> expression) {
 //        for (int i = 0; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0]);

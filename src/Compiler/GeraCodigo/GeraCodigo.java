@@ -115,22 +115,22 @@ public class GeraCodigo {
                 codigo_gerado.add("    ");
             } else if (pilha.get(i)[1].equals("snao")) {
                 codigo_gerado.add("    ");
-                codigo_gerado.add("NEG    ");
+                codigo_gerado.add("NEG     ");
                 codigo_gerado.add("    ");
                 codigo_gerado.add("    ");
             } else if (pilha.get(i)[1].equals("sverdadeiro")) {
                 codigo_gerado.add("    ");
-                codigo_gerado.add("LDC    ");
+                codigo_gerado.add("LDC     ");
                 codigo_gerado.add("1   ");
                 codigo_gerado.add("    ");
             } else if (pilha.get(i)[1].equals("sfalso")) {
                 codigo_gerado.add("    ");
-                codigo_gerado.add("LDC    ");
+                codigo_gerado.add("LDC     ");
                 codigo_gerado.add("0   ");
                 codigo_gerado.add("    ");
             } else if (pilha.get(i)[1].equals("satrib")) {
                 codigo_gerado.add("    ");
-                codigo_gerado.add("STR    ");
+                codigo_gerado.add("STR     ");
                 codigo_gerado.add(formata_codigo(String.valueOf(value.getPosicaoMemoriaVariavel(pilha.get(i), level)), 4));
                 codigo_gerado.add("    ");
             }

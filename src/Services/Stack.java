@@ -32,6 +32,7 @@ public class Stack { // Tabela de simbolos
                     }
                 }
             }
+
         }
         return -1;
     }

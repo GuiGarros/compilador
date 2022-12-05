@@ -16,6 +16,8 @@ public class SyntaxAnalyser {
     private Stack simbolTableStack = new Stack();
     public int level = 0;
     public int rotulo = 1;
+
+    public int inicios = 0;
     public int p = 0; // posição na pilha
     public int contador_variaveis = 0;
     public LinkedList<Integer> flagAtribuicaoTipoDireita = new LinkedList<>(); // 1 = inteiro / 2 = booleano
@@ -142,7 +144,8 @@ public class SyntaxAnalyser {
     }
 
     public String[] AnalyseCommand(String[] originalToken) {
-        if (originalToken[1].equals("sinício")) {
+        if (originalToken[1].equals("sinício") || inicios > 0) {
+            inicios++;
             String[] token = analyser.getNextToken();
             token = AnalyseSimpleCommand(token);
             while (!token[1].equals("sfim")) {
@@ -150,16 +153,21 @@ public class SyntaxAnalyser {
                     token = analyser.getNextToken();
                     if (!token[1].equals("sfim")) {
                         token = AnalyseSimpleCommand(token);
-                    } else {
+                    }
+                    else
+                    {
+                        inicios--;
                         break;
                     }
                 } else {
                     Errors.newError("Error: Ausência de ';' no final da linha.");
                 }
             }
+
             token = analyser.getNextToken();
             return token;
         } else {
+            System.out.println(":::::"+inicios);
             Errors.newError("Error: Ausência de 'inicio'.");
             return null;
         }
@@ -202,6 +210,7 @@ public class SyntaxAnalyser {
     }
 
     public String[] analyser_atrib(String[] originalToken, LinkedList<String[]> expression) {
+        flagAtribuicaoTipoDireita.clear();
         LinkedList<String[]> auxiliar = new LinkedList<String[]>();
         String[] token = analyser.getNextToken();
         expression.addLast(originalToken);
@@ -215,8 +224,12 @@ public class SyntaxAnalyser {
         if (simbolTableStack.findType(auxiliar.getFirst()[0], level) != -1) {
             simbolTableStack.flagAtribuicaoTipoEsquerda = simbolTableStack.findType(auxiliar.getFirst()[0], level);
         }
+
+        printExpression(expression);
+        System.out.println(simbolTableStack.flagAtribuicaoTipoEsquerda);
+        System.out.println(flagAtribuicaoTipoDireita);
+
         if (verificaValidaExpressão(simbolTableStack.flagAtribuicaoTipoEsquerda, flagAtribuicaoTipoDireita)) {
-            flagAtribuicaoTipoDireita.clear();
             gera.criaCodigo("", "STR", String.valueOf(aux_p), "");
         } else {
             Errors.newError("Error: Compatibilidade de tipos na expressão é inválida.");
@@ -378,7 +391,7 @@ public class SyntaxAnalyser {
                 rotulo++;
                 token = analyser.getNextToken();
                 if (token[1].equals("sponto_vírgula")) {
-                    AnalyseBlock();
+                    token = AnalyseBlock();
                 } else {
                     Errors.newError("Error: Ausência de ';' na declaração de um procedimento.");
                 }
@@ -416,7 +429,7 @@ public class SyntaxAnalyser {
                         rotulo++;
                         token = analyser.getNextToken();
                         if (token[1].equals("sponto_vírgula")) {
-                            AnalyseBlock();
+                           token = AnalyseBlock();
                         }
                     } else {
                         Errors.newError("Error: Ausência de um tipo na declaração de uma função.");
@@ -512,6 +525,7 @@ public class SyntaxAnalyser {
             }
             return expression;
         } else if (token[1].equals("snúmero")) {
+            flagAtribuicaoTipoDireita.addLast(1);
             token = analyser.getNextToken();
             expression.addLast(token);
             return expression;
@@ -670,10 +684,10 @@ public class SyntaxAnalyser {
         return true;
     }
 
-//    public void printExpression(LinkedList<String[]> expression) {
-//        for (int i = 0; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0] + "(" + expression.get(i)[1] + ")");
-//        System.out.println("\n");
-//    }
+    public void printExpression(LinkedList<String[]> expression) {
+        for (int i = 0; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0] + "(" + expression.get(i)[1] + ")");
+        System.out.println("\n");
+    }
 
 //    public void printExpression2(LinkedList<String[]> expression) {
 //        for (int i = 0; i < expression.size(); i++) System.out.print(" " + expression.get(i)[0]);
